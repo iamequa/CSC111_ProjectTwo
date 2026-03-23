@@ -1,4 +1,4 @@
-"""CSC111 Project 2: The Ultimate Recipe Index Vertices
+"""CSC111 Project 2: The Ultimate Recipe Index - Vertex
 
 ===============================
 

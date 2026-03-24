@@ -32,7 +32,7 @@ class Button:
         """
         BLACK = (0, 0, 0)
         self.rect.topleft = self.top_left_coordinates
-        pygame.draw.rect(surface, self.color, self.rect)
+        pygame.draw.rect(surface, self.color, self.rect, border_radius=13)
         text_surf = self.font.render(self.text, True, BLACK)
         text_rect = text_surf.get_rect(center=self.rect.center)
         surface.blit(text_surf, text_rect)
@@ -105,6 +105,9 @@ class ScreenOrganizer:
         """Swaps the screen with new_screen and makes it curr_screen"""
         self.curr_screen = new_screen
 
+class TextBox:
+    """A class that represents the textbox values a user inputs."""
+
 
 def proceed_to_graph(search_screen: Screen, current_screen: ScreenOrganizer) -> None:
     """Switches from current screen to search screen
@@ -116,3 +119,8 @@ def proceed_to_algorithm(algorithm_screen: Screen, current_screen: ScreenOrganiz
     """Switches from current screen to algorithm screen
     """
     current_screen.switch_screens(algorithm_screen)
+
+
+def proceed_to_menu(main_screen: Screen, current_screen: ScreenOrganizer) -> None:
+    """Switches the screen back to the main screen"""
+    current_screen.switch_screens(main_screen)

@@ -9,11 +9,12 @@ main_menu_image_file_path = "images/white.jpg"
 algorithm_image_file_path = "images/white.jpg"
 search_image_file_path = "images/blue.jpeg"
 
-#SCREENS
+# SCREENS
 main_menu_screen = screen_displays.Screen([], main_menu_image_file_path, screen)
 algorithm_screen = screen_displays.Screen([], algorithm_image_file_path, screen)
 search_image_screen = screen_displays.Screen([], search_image_file_path, screen)
 current_screen = screen_displays.ScreenOrganizer(main_menu_screen)
+
 # Main menu buttons
 pa_rect = pygame.Rect(500, 500, 200, 60)
 pa_color = (148, 124, 92)
@@ -25,9 +26,18 @@ si_color = (148, 124, 92)
 si_button = screen_displays.Button(si_rect, "Search", pa_color,
                                    lambda: screen_displays.proceed_to_graph(search_image_screen,
                                                                             current_screen), (400, 640))
-
-# Main menu screen
+# Algorithm Screen buttons
+mm_rect = pygame.Rect(50, 50, 200, 60)
+mm_color = (148, 124, 92)
+mm_button = screen_displays.Button(mm_rect, "Return to Menu", pa_color,
+                                   lambda: screen_displays.proceed_to_menu(main_menu_screen, current_screen),
+                                   (0, 0))
+# Updating screen buttons
 main_menu_screen.buttons = [pa_button, si_button]
+algorithm_screen.buttons = [mm_button]
+search_image_screen.buttons = [mm_button]
+
+
 running = True
 
 while running:

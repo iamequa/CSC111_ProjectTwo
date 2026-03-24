@@ -37,6 +37,10 @@ main_menu_screen.buttons = [pa_button, si_button]
 algorithm_screen.buttons = [mm_button]
 search_image_screen.buttons = [mm_button]
 
+# Textboxes for search screen
+textbox_format = pygame.Rect(50, 50, 400, 60)
+algorithm_screen.textboxes = [screen_displays.TextBox(textbox_format, (50,250))]
+
 
 running = True
 
@@ -47,6 +51,7 @@ while running:
             break
         if current_screen.curr_screen == algorithm_screen:
             algorithm_screen.draw_screen()
+            current_screen.curr_screen.update_all_textboxes(event)
         if current_screen.curr_screen.screen == search_image_screen:
             search_image_screen.draw_screen()
         if current_screen.curr_screen.screen == main_menu_screen:

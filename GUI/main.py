@@ -4,20 +4,30 @@ import screen_displays
 
 pygame.init()
 # INITILIAZERS (File Path)
-main_menu_image_file_path = "images/bakery_placeholder.webp"
-algorithm_image_file_path = ""
-search_image_file_path = ""
+screen = pygame.display.set_mode((1000, 1000))
+main_menu_image_file_path = "images/white.jpg"
+algorithm_image_file_path = "images/white.jpg"
+search_image_file_path = "images/blue.jpeg"
 
-# Main meny buttons
-pa_rect = pygame.Rect(500, 399, 100, 60)
+#SCREENS
+main_menu_screen = screen_displays.Screen([], main_menu_image_file_path, screen)
+algorithm_screen = screen_displays.Screen([], algorithm_image_file_path, screen)
+search_image_screen = screen_displays.Screen([], search_image_file_path, screen)
+current_screen = screen_displays.ScreenOrganizer(main_menu_screen)
+# Main menu buttons
+pa_rect = pygame.Rect(500, 500, 200, 60)
 pa_color = (148, 124, 92)
 pa_button = screen_displays.Button(pa_rect, "Survey", pa_color,
-                                   screen_displays.proceed_to_algorithm())
-
-si_rect = pygame.Rect(500, 399, 100, 60)
+                                   lambda: screen_displays.proceed_to_algorithm(algorithm_screen, current_screen),
+                                   (400, 540))
+si_rect = pygame.Rect(500, 600, 200, 60)
+si_color = (148, 124, 92)
+si_button = screen_displays.Button(si_rect, "Search", pa_color,
+                                   lambda: screen_displays.proceed_to_graph(search_image_screen,
+                                                                            current_screen), (400, 640))
 
 # Main menu screen
-main_menu_screen = screen_displays.Screen([pa_button], main_menu_image_file_path)
+main_menu_screen.buttons = [pa_button, si_button]
 running = True
 
 while running:
@@ -25,7 +35,15 @@ while running:
         if event.type == pygame.QUIT:
             running = False
             break
-
+        if current_screen.curr_screen == algorithm_screen:
+            algorithm_screen.draw_screen()
+        if current_screen.curr_screen.screen == search_image_screen:
+            search_image_screen.draw_screen()
+        if current_screen.curr_screen.screen == main_menu_screen:
+            main_menu_screen.draw_screen()
+        current_screen.curr_screen.update_all_buttons(event)
+    current_screen.curr_screen.draw_screen()
     pygame.display.flip()
+
 pygame.quit()
 sys.exit()

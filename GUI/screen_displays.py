@@ -1,6 +1,6 @@
 import pygame
 from typing import Any, Callable
-
+from Computation import __init__
 
 class Button:
     """Represents the buttons in Python.
@@ -127,12 +127,40 @@ def proceed_to_menu(main_screen: Screen, current_screen: ScreenOrganizer) -> Non
 
 class SearchBar():
     """
-    A class that represents the search bar
+    A class that handles the computations of the search bar and the reuqired events.
+    Instance Attributes:
+    - search_bar_image: The filepath of graphic associated with the search bar
+    - search_bar_textbox: The textbox associated with the search bar
     """
+    image: str
+    textbox: TextBox
+    screen: pygame.Surface
 
-    def search_tree(input: str, current_screen: ScreenOrganizer) -> list[str]:
-        """
+    def __init__(self, image: str, textbox: TextBox, screen: Screen):
+        self.image = image
+        self.textbox = textbox
+        self.screen = screen.screen
 
-        :param current_screen:
-        :return:
+    def draw_search_bar(self, coordinates: tuple) -> None:
         """
+        Draws a search bar on the coordinates given
+        """
+        search_bar_graphic = pygame.image.load(self.image)
+        self.screen.blit(search_bar_graphic, coordinates)
+        self.screen.blit
+
+
+
+
+
+
+
+
+def return_results(input: str) -> list[str]:
+        """
+        Returns the results of the search
+        """
+        data = RecipeFinder(#what tree should be placed here?)
+        return data.SearchByName(input)
+
+

@@ -46,19 +46,25 @@ class Recipe(Vertex):
     #   - _name_tokens: any additional information about the recipe
     #   - _paired_recipes: a mapping of categories and recipes which satisfy those categories
 
-    _uid: int
+    _UID: int
+    _STEPS: str
     _categories: set[Category]
     _ingredients: set[Ingredient]
     _name_tokens: set[NameToken]
     _paired_recipes: dict[Category, set[Recipe]]
 
-    def __init__(self, name: str, uid: int) -> None:
+    def __init__(self, name: str, uid: int, steps: str) -> None:
         super().__init__(name)
-        self._uid = uid
+        self._UID = uid
+        self._STEPS = steps
         self._categories, self._ingredients, self._name_tokens, self._paired_recipes = set(), set(), set(), {}
 
     # NOTE: For every getter, do NOT use it in a manner such recipe.get_categories.add(category),
     # use recipe.add_category(category)
+    def get_id(self) -> int:
+        """Returns the ID of this recipe"""
+        return self._UID
+
     def get_categories(self) -> set[Category]:
         """Returns the categories this recipe is a part of"""
         return self._categories

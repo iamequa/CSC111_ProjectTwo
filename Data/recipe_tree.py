@@ -20,9 +20,9 @@ CATEGORIES = "c"
 NAME_TOKENS = "n"
 
 
-def build_recipe_tree(file_path: str) -> RecipeTree:
+def build_recipe_tree(file_path: str, is_csv: bool) -> RecipeTree:
     """
-    Builds a recipe tree based off the parquet file of the recipe dataset.
+    Builds a recipe tree based off the csv/parquet file of the recipe dataset.
 
     The logic is that for every row (aka. every recipe), we add the recipe as a vertex to the tree, making
     sure that the categories, ingredients, and name_tokens are not recreated by keeping track of what we have
@@ -31,7 +31,7 @@ def build_recipe_tree(file_path: str) -> RecipeTree:
     Preconditions:
         - file_path is the path to the parquet file of the recipe dataset
     """
-    recipes = file_reader.read_recipes_data(file_path)
+    recipes = file_reader.read_recipes_data(file_path, is_csv)
     tree = RecipeTree(INGREDIENTS)
     seen_categories, seen_ingredients, seen_name_tokens = {}, {}, {}
     for recipe in recipes:
@@ -50,7 +50,7 @@ def make_recipe_vertex(recipe: list, categories: dict[str, vertex.Category], ing
     Precondition:
         - recipe is a valid list of the form specified in file_reader.py
     """
-    recipe_vertex = vertex.Recipe(recipe[NAME_INDEX], recipe[UID_INDEX])
+    recipe_vertex = vertex.Recipe(recipe[NAME_INDEX], recipe[UID_INDEX], recipe[STEPS_INDEX])
     for category in recipe[CATEGORIES_INDEX]:
         if category not in categories:
             categories[category] = vertex.Category(category)

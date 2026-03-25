@@ -6,7 +6,12 @@ This Python module contains code meant to read from parquet files and CSV files,
 data to make it usable for the program
 """
 from __future__ import annotations
+
+import re
+
 import pandas as pd
+import pyarrow
+import fastparquet
 import csv
 
 ID_INDEX = 0
@@ -21,8 +26,11 @@ TARGET_INDEX = 1
 NAME_OVERLAP_INDEX = 2
 NAME_SIMILARITY_INDEX = 3
 
+ZERO = 0
+ONE = 1
 
-def read_recipes_data(path: str) -> list[list]:
+
+def read_recipes_data(path: str, is_csv: bool) -> list[list]:
     """
     Reads data from the recipe data file and returns a tidy list of the data.
 
@@ -41,12 +49,11 @@ def read_recipes_data(path: str) -> list[list]:
     Preconditions:
         - path is the path to the parquet of the recipes data
     """
-    lst = read_parquet(path)
-    clean_recipe_data(lst)
-    return lst
+    lst = read_csv(path) if is_csv else read_parquet(path)
+    return clean_recipe_data(lst)
 
 
-def read_pairs_data(path: str) -> list[list]:
+def read_pairs_data(path: str, is_csv: bool) -> list[list]:
     """
     Reads data from the pairs data file and returns a tidy list of the data.
 
@@ -58,11 +65,10 @@ def read_pairs_data(path: str) -> list[list]:
     - name_similarity is a double form 0-1 of how similar in terms of name the recipes are
     - categories is a list of the catgeories which the replacement satisfies
     Preconditions:
-        - path is the path to the parquet of the pairs data
+        - path is the path to a csv/parquet of pairs data
     """
-    lst = read_parquet(path)
-    clean_pairs_data(lst)
-    return lst
+    lst = read_csv(path) if is_csv else read_parquet(path)
+    return clean_recipe_data(lst)
 
 
 def read_parquet(path: str) -> list[list[str]]:
@@ -83,7 +89,9 @@ def read_csv(path: str) -> list[list[str]]:
         - path is a valid file path to a csv file
     """
     with open(path, 'r') as file:
-        return list(csv.reader(file))
+        reader = csv.reader(file)
+        next(reader)
+        return list(reader)
 
 
 def parquet_to_csv(path: str) -> str:
@@ -112,7 +120,7 @@ def clean_recipe_data(lst: list[list]) -> list[list]:
         ingredients = process_varchar_list(row[INGREDIENTS_INDEX])
         categories = process_varchar_list(row[CATEGORIES_INDEX])
         name_tokens = process_varchar_list(row[NAME_TOKENS_INDEX])
-        clean_lst += [recipe_id, name, steps, ingredients, categories, name_tokens]
+        clean_lst.append([recipe_id, name, steps, ingredients, categories, name_tokens])
     return clean_lst
 
 
@@ -128,32 +136,30 @@ def clean_pairs_data(lst: list[list]) -> list[list]:
         name_overlap = row[NAME_OVERLAP_INDEX]
         name_similarity = float(row[NAME_SIMILARITY_INDEX])
         categories = process_varchar_list(row[CATEGORIES_INDEX])
-        clean_lst += [base, target, name_overlap, name_similarity, categories]
+        clean_lst.append([base, target, name_overlap, name_similarity, categories])
     return clean_lst
 
 
-def process_varchar_list(lst: str) -> list:
+def process_varchar_list(lst: str) -> list[str]:
     """
-    Take a string list and covert to a Pythonic list
+    Convert a string representation of a list into a Python list.
+    Handles both:
+    - ['a', 'b', 'c']
+    - ['a' 'b' 'c']
     """
-    value = lst.strip()
-    if value.startswith("[") and value.endswith("]"):
-        value = value[1:-1]
-    if not value:
+    if not lst:
         return []
 
-    result = []
-    current = ""
+    value = lst.strip()
 
-    for char in value:
-        if char == ",":
-            cleaned = current.strip().strip("'").strip('"')
-            result.append(cleaned)
-            current = ""
-        else:
-            current += char
+    # Remove outer brackets
+    if value.startswith("[") and value.endswith("]"):
+        value = value[1:-1]
 
-    cleaned = current.strip().strip("'").strip('"')
-    result.append(cleaned)
+    # Extract quoted values
+    matches = re.findall(r"'([^']*)'|\"([^\"]*)\"", value)
+
+    # matches is list of tuples → pick non-empty
+    result = [m[ZERO] or m[ONE] for m in matches]
 
     return result

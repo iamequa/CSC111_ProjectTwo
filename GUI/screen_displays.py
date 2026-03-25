@@ -1,6 +1,7 @@
+from __future__ import annotations
 import pygame
-from typing import Any, Callable
-from Computation import __init__
+from typing import Callable, Optional
+
 
 class Button:
     """Represents the buttons in Python.
@@ -37,7 +38,7 @@ class Button:
         text_rect = text_surf.get_rect(center=self.rect.center)
         surface.blit(text_surf, text_rect)
 
-    def perform_event(self, event: pygame.event.Event) -> None:
+    def perform_event(self) -> None:
         """Checks over if event was a click, if click collided with button surface area then perform action
         """
         print("action performed")
@@ -53,7 +54,7 @@ class Button:
         return False
 
 
-class Screen:
+class Screen:  # pls add all the private attributes later as a reminder to myself
     """A class that represents a singular screen in Python
 
     Instance Attributes:
@@ -68,6 +69,7 @@ class Screen:
     HEIGHT: int
     buttons: list[Button]
     image_filepath: str
+    textboxes: Optional[list[TextBox]] = None
 
     def __init__(self, buttons: list[Button], image_filepath: str, screen: pygame.Surface):
         self.screen = screen
@@ -82,7 +84,14 @@ class Screen:
         """Checks if all buttons are clicked in self."""
         for button in self.buttons:
             if button.is_clicked(event):
-                button.perform_event(event)
+                button.perform_event()
+
+    def update_all_textboxes(self, event: pygame.event.Event):
+        """Updates every textbox with a working textbook
+        """
+        if self.textboxes is not None:
+            for textbox in self.textboxes:
+                textbox.handle_textbox_input(event)
 
     def draw_screen(self) -> None:
         """Draws the screen in pygame with buttons.
@@ -91,6 +100,9 @@ class Screen:
         for button in self.buttons:
             button.draw_button(self.screen)
         pygame.display.flip()
+        if self.textboxes is not None:
+            for textbox in self.textboxes:
+                textbox.draw_textbox(self.screen)
 
 
 class ScreenOrganizer:
@@ -105,8 +117,49 @@ class ScreenOrganizer:
         """Swaps the screen with new_screen and makes it curr_screen"""
         self.curr_screen = new_screen
 
+
 class TextBox:
     """A class that represents the textbox values a user inputs."""
+    rect: pygame.Rect
+    text_inputted: str
+    color: tuple[int, int, int]
+    top_left_coordinates: tuple[int, int]
+    _font: pygame.font.Font
+
+    def __init__(self, rect: pygame.Rect, top_left_coordinates: tuple[int, int]):
+        BLACK = (0, 0, 0)
+        self.rect = rect
+        self.top_left_coordinates = top_left_coordinates
+        self.rect.topleft = top_left_coordinates
+        self.color = BLACK
+        self.font = pygame.font.SysFont("candara", 30)
+        self.text_inputted = ''
+
+    def draw_textbox(self, surface: pygame.Surface):
+        """ Draws a textbox for user"""
+        BLACK = (0, 0, 0)
+        text_surf = self.font.render(self.text_inputted, True, BLACK)
+        text_rect = text_surf.get_rect(center=self.rect.center)
+        surface.blit(text_surf, text_rect)
+
+    def handle_textbox_input(self, event: pygame.event.Event) -> None:
+        """Helper function that will keep track of what the user types and stops inputting once enter key pressed
+        """
+        print("registered")
+        text_not_done = True
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if not self.rect.collidepoint(event.pos):
+                text_not_done = False
+
+        if event.type == pygame.KEYDOWN and text_not_done:
+            if event.type == pygame.K_BACKSPACE:
+                self.text_inputted = self.text_inputted[:-1]
+            elif event.type == pygame.K_SPACE:
+                self.text_inputted += ' '
+            elif event.type == pygame.K_RETURN:
+                text_not_done = False
+            else:
+                self.text_inputted += event.unicode
 
 
 def proceed_to_graph(search_screen: Screen, current_screen: ScreenOrganizer) -> None:
@@ -124,43 +177,3 @@ def proceed_to_algorithm(algorithm_screen: Screen, current_screen: ScreenOrganiz
 def proceed_to_menu(main_screen: Screen, current_screen: ScreenOrganizer) -> None:
     """Switches the screen back to the main screen"""
     current_screen.switch_screens(main_screen)
-
-class SearchBar():
-    """
-    A class that handles the computations of the search bar and the reuqired events.
-    Instance Attributes:
-    - search_bar_image: The filepath of graphic associated with the search bar
-    - search_bar_textbox: The textbox associated with the search bar
-    """
-    image: str
-    textbox: TextBox
-    screen: pygame.Surface
-
-    def __init__(self, image: str, textbox: TextBox, screen: Screen):
-        self.image = image
-        self.textbox = textbox
-        self.screen = screen.screen
-
-    def draw_search_bar(self, coordinates: tuple) -> None:
-        """
-        Draws a search bar on the coordinates given
-        """
-        search_bar_graphic = pygame.image.load(self.image)
-        self.screen.blit(search_bar_graphic, coordinates)
-        self.screen.blit
-
-
-
-
-
-
-
-
-def return_results(input: str) -> list[str]:
-        """
-        Returns the results of the search
-        """
-        data = RecipeFinder(#what tree should be placed here?)
-        return data.SearchByName(input)
-
-

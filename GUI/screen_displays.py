@@ -124,3 +124,15 @@ def proceed_to_algorithm(algorithm_screen: Screen, current_screen: ScreenOrganiz
 def proceed_to_menu(main_screen: Screen, current_screen: ScreenOrganizer) -> None:
     """Switches the screen back to the main screen"""
     current_screen.switch_screens(main_screen)
+
+class SearchBar():
+    """
+    A class that represents the search bar
+    """
+
+    def search_tree(input: str, current_screen: ScreenOrganizer) -> list[str]:
+        """
+
+        :param current_screen:
+        :return:
+        """

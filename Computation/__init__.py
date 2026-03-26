@@ -1,3 +1,9 @@
+
+from Data.recipe_graph import RecipeGraph
+from Data.recipe_tree import RecipeTree
+from Data.vertex import Recipe
+from Data.recipe_tree import NAME_TOKENS
+
 class RecommendationFinder:
     """ A tree based entity that recommends a recipe based on user's preferences.
      Instance Attributes:
@@ -9,7 +15,7 @@ class RecommendationFinder:
         """Initialize a new RecommendationFinder."""
         self.recipes = recipes
 
-    def find_recommendations(self,ingredients: List[str],categories: List[str],name_tokens: List[str]) -> list[Recipe]:
+    def find_recommendations(self,ingredients: list[str],categories: list[str],name_tokens: list[str]) -> list[Recipe]:
         """Return a list of the top 3 recipes that best match the given user preferences.
 
         Recipes are scored based on how well they match the provided criteria.
@@ -31,10 +37,10 @@ class AlternativeComputer:
         """Initialize a new AlternativeComputer."""
         self.recipes = recipes
 
-    def findSimilarRecipe(recipe: int, ingredients: List[str],categories: List[[str]],name_tokens:List[str]) -> List[Recipe]:
+    def findSimilarRecipe(recipe: int, ingredients: list[str],categories: list[[str]],name_tokens:list[str]) -> list[Recipe]:
         """"finds a similar recipe based on the given recipe and ingredients."""
 
-    def findPairedRecipe(recipe: int, ingredients:List[str],categories: List[str], name_tokens: List[str]) -> List[Recipe]:
+    def findPairedRecipe(recipe: int, ingredients:list[str],categories: list[str], name_tokens: list[str]) -> list[Recipe]:
         """"finds a paired recipe based on the given recipe and ingredients."""
 
 
@@ -69,7 +75,7 @@ class RecipeFinder:
 
         return results
 
-    def searchByFilters(self, ingredients: List[str], categories: List[str],name: str = None) -> list[Recipe]:
+    def searchByFilters(self, ingredients: list[str], categories: list[str],name: str = None) -> list[Recipe]:
         """ Returns a list of recipes matching the given name and ingredients."""
         # Step 1: Determine candidate recipes
         if name is None:
@@ -88,15 +94,15 @@ class RecipeFinder:
 
 class Sorter:
     """A utility class for sorting lists of recipes."""
-    def sort_by_name(self, recipes: List[Recipe]) -> List[Recipe]:
+    def sort_by_name(self, recipes: list[Recipe]) -> list[Recipe]:
         """Return recipes sorted alphabetically by name."""
         return sorted(recipes, key=lambda r: r.name)
 
-    def sort_by_ingredient_count(self, recipes: List[Recipe]) -> List[Recipe]:
+    def sort_by_ingredient_count(self, recipes: list[Recipe]) -> list[Recipe]:
         """Return recipes sorted by number of ingredients."""
         return sorted(recipes, key=lambda r: len(r.ingredients))
 
-    def sort(self, recipes: List[Recipe], key: str) -> List[Recipe]:
+    def sort(self, recipes: list[Recipe], key: str) -> list[Recipe]:
         """Sort recipes based on a given key.
         Valid keys:
             - 'name'

@@ -1,6 +1,7 @@
 from __future__ import annotations
 import pygame
 from typing import Callable, Optional
+from Data import vertex
 
 
 class Button:
@@ -177,3 +178,52 @@ def proceed_to_algorithm(algorithm_screen: Screen, current_screen: ScreenOrganiz
 def proceed_to_menu(main_screen: Screen, current_screen: ScreenOrganizer) -> None:
     """Switches the screen back to the main screen"""
     current_screen.switch_screens(main_screen)
+
+
+class SearchEngine():
+    """
+    A class that handles the computations of the search bar and the reuqired events.
+    Instance Attributes:
+    - image: The filepath of graphic associated with the search bar
+    - textbox: The textbox associated with the search bar
+    - screen: The screen the SearchEngine operates on
+    """
+    image: str
+    textbox: TextBox
+    screen: pygame.Surface
+
+    def __init__(self, image: str, textbox: TextBox, screen: Screen):
+        self.image = image
+        self.textbox = TextBox()
+        self.screen = screen.screen
+
+    def draw_search_bar(self, coordinates: tuple) -> None:
+        """
+        Draws a search bar on the coordinates given
+        """
+        search_bar_graphic = pygame.image.load(self.image)
+        self.screen.blit(search_bar_graphic, coordinates)
+        self.textbox.draw_textbox(self.screen)
+        print('search bar generated!')
+
+    # TODO: figure out how to scroll and add buttons iteratively fron the return results funtion
+    def draw_results_section(self, coordinates: tuple, section_graphic: str) -> None:
+        """
+        Draws the results section of the search engine.
+        """
+        section_graphic = pygame.image.load(section_graphic)
+        self.screen.blit(section_graphic, coordinates)
+        # add buttons associated with recipes here
+        pygame.display.flip()
+        print('results graphics generated')
+
+    def return_results(self, size: int, color: int, coordinates: tuple[int, int], recipes: list[Recipe]) -> list[Button]:
+        """
+        Returns the results of the search as a list of buttons
+        """
+        list_of_buttons = []
+        for recipe in recipes:
+            # how to update each button attribute?
+            button = Button()
+            list_of_buttons.append(button)
+        return list_of_buttons

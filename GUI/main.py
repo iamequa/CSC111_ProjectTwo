@@ -8,11 +8,13 @@ screen = pygame.display.set_mode((1000, 1000))
 main_menu_image_file_path = "images/white.jpg"
 algorithm_image_file_path = "images/white.jpg"
 search_image_file_path = "images/blue.jpeg"
+recipe_screen = "images/joker_placeholder.jpg"
 
 # SCREENS
 main_menu_screen = screen_displays.Screen([], main_menu_image_file_path, screen)
 algorithm_screen = screen_displays.Screen([], algorithm_image_file_path, screen)
 search_image_screen = screen_displays.Screen([], search_image_file_path, screen)
+# recipe_screen = screen_displays.Screen([], search_image_file_path)
 current_screen = screen_displays.ScreenOrganizer(main_menu_screen)
 
 # Main menu buttons
@@ -54,6 +56,7 @@ while running:
             current_screen.curr_screen.update_all_textboxes(event)
         if current_screen.curr_screen.screen == search_image_screen:
             search_image_screen.draw_screen()
+            # handle the searching of each object
         if current_screen.curr_screen.screen == main_menu_screen:
             main_menu_screen.draw_screen()
         current_screen.curr_screen.update_all_buttons(event)

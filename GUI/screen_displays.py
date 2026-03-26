@@ -2,6 +2,7 @@ from __future__ import annotations
 import pygame
 from typing import Callable, Optional
 from Data import vertex
+import pygame_gui
 
 
 class Button:
@@ -197,6 +198,7 @@ class SearchEngine():
         self.textbox = TextBox()
         self.screen = screen.screen
 
+#not necessarily needed for the class to finish
     def draw_search_bar(self, coordinates: tuple) -> None:
         """
         Draws a search bar on the coordinates given
@@ -213,11 +215,40 @@ class SearchEngine():
         """
         section_graphic = pygame.image.load(section_graphic)
         self.screen.blit(section_graphic, coordinates)
-        # add buttons associated with recipes here
+        # draw results section
         pygame.display.flip()
         print('results graphics generated')
 
-    def return_results(self, size: int, color: int, coordinates: tuple[int, int], recipes: list[Recipe]) -> list[Button]:
+
+
+
+class ResultsSection():
+    """
+    A scrollable container that contains links to the recipes that are reccomended by a search/
+    """
+    rect: pygame.Rect
+    manager: pygame_gui.UIManager
+    screen: pygame.Surface
+    buttons: list[Button]
+
+    def __init__(self, rect: pygame.Rect, manager: pygame_gui.UIManager, screen: pygame.Surface):
+        self.screen = screen
+        self.manager = manager
+        self.container = pygame_gui.elements.UIScrollingContainer(
+            relative_rect=rect,
+            manager=manager
+        )
+        self.buttons: list[Button] = []
+
+    def draw_container(self, recipes: list) -> None:
+        """
+        Draws the container for the results section
+        """
+        self.buttons = []
+        self.buttons = return_results(recipes)
+
+    def return_results(self, recipes: list[Recipe]) -> list[
+        Button]:
         """
         Returns the results of the search as a list of buttons
         """
@@ -227,3 +258,9 @@ class SearchEngine():
             button = Button()
             list_of_buttons.append(button)
         return list_of_buttons
+
+
+class RecipePage(Screen):
+    """
+    A page associated with each recipe.
+    """

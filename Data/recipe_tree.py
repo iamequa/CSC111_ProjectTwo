@@ -32,7 +32,7 @@ def build_recipe_tree(file_path: str, is_csv: bool) -> RecipeTree:
         - file_path is the path to the parquet file of the recipe dataset
     """
     recipes = file_reader.read_recipes_data(file_path, is_csv)
-    tree = RecipeTree(INGREDIENTS)
+    tree = RecipeTree(NAME_TOKENS)
     seen_categories, seen_ingredients, seen_name_tokens = {}, {}, {}
     for recipe in recipes:
         tree.add_vertex(make_recipe_vertex(recipe, seen_categories, seen_ingredients, seen_name_tokens))
@@ -77,7 +77,7 @@ class RecipeTree:
     Depth Two - Recipes get filtered by the categories they fall within
     Depth Three - Recipes get filtered by their name_tokens, which is what words they contain in their name
 
-    No filters -> Filtered by ingredient -> Filtered by categories -> Filtered by name_tokens
+    No filters -> Filtered by name_tokens -> Filtered by categories -> Filtered by ingredients
 
     How this works in practice is that if someone wants to find a dairy-free recipe of some kind of yogurt with almonds
     in it, the tree first recognizes the user wants "almonds", and filters down. Then, it recognizes that it has to be
@@ -129,14 +129,14 @@ class RecipeTree:
             return
 
         # Add the recipe according to the current filter, and move on to the next filter
-        if self.current_filter == INGREDIENTS:
-            self._add_to_children(recipe.get_ingredients(), CATEGORIES, recipe)
+        if self.current_filter == NAME_TOKENS:
+            self._add_to_children(recipe.get_name_tokens(), CATEGORIES, recipe)
 
         elif self.current_filter == CATEGORIES:
-            self._add_to_children(recipe.get_categories(), NAME_TOKENS, recipe)
+            self._add_to_children(recipe.get_categories(), INGREDIENTS, recipe)
 
-        elif self.current_filter == NAME_TOKENS:
-            self._add_to_children(recipe.get_name_tokens(), None, recipe)
+        elif self.current_filter == INGREDIENTS:
+            self._add_to_children(recipe.get_ingredients(), None, recipe)
 
     def _add_to_children(self, items: set, next_filter: str | None, recipe: vertex.Recipe):
         """Takes the recipe and recursively fully adds the recipe to every filter it is in"""
@@ -150,3 +150,14 @@ class RecipeTree:
 
     def __contains__(self, uid: int) -> bool:
         return uid in self.recipes
+
+    def sort_by_name(self) -> list[vertex.Recipe]:
+        recipe_list = self.recipes.values()
+        return sorted(recipe_list, key=lambda recipe: len(recipe.get_name()))
+
+    def sort_by_ingredient_count(self) -> list[vertex.Recipe]:
+        recipe_list = self.recipes.values()
+        return sorted(recipe_list, key=lambda recipe: len(recipe.get_ingredients()))
+
+    def search_by_name(self, name: str) -> list[vertex.Recipe]:
+        return []

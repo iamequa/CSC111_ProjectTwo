@@ -193,18 +193,18 @@ class SearchEngine():
     textbox: TextBox
     screen: pygame.Surface
 
-    def __init__(self, image: str, textbox: TextBox, screen: Screen):
+    def __init__(self, image: str,  screen: Screen):
         self.image = image
-        self.textbox = TextBox()
         self.screen = screen.screen
 
-#not necessarily needed for the class to finish
-    def draw_search_bar(self, coordinates: tuple) -> None:
+# not necessarily needed for the class to finish
+    def draw_search_bar(self, coordinates: tuple[int, int], textbox_rect: pygame.Rect) -> None:
         """
         Draws a search bar on the coordinates given
         """
         search_bar_graphic = pygame.image.load(self.image)
         self.screen.blit(search_bar_graphic, coordinates)
+        self.textbox = TextBox(textbox_rect, coordinates)
         self.textbox.draw_textbox(self.screen)
         print('search bar generated!')
 
@@ -240,7 +240,7 @@ class ResultsSection():
         )
         self.buttons: list[Button] = []
 
-    def draw_container(self, recipes: list) -> None:
+    def draw_container(self, recipes: list[Recipe]) -> None:
         """
         Draws the container for the results section
         """

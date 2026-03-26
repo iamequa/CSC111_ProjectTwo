@@ -117,7 +117,6 @@ class Recipe(Vertex):
             self._paired_recipes[category] = set()
         self._paired_recipes[category].add(recipe)
 
-
 class Attribute(Vertex):
     """
     Represents a non-recipe vertex within a recipe graph.

@@ -14,7 +14,7 @@ import pyarrow
 import fastparquet
 import csv
 
-ID_INDEX = 0
+UID_INDEX = 0
 NAME_INDEX = 1
 STEPS_INDEX = 2
 INGREDIENTS_INDEX = 3
@@ -68,7 +68,7 @@ def read_pairs_data(path: str, is_csv: bool) -> list[list]:
         - path is the path to a csv/parquet of pairs data
     """
     lst = read_csv(path) if is_csv else read_parquet(path)
-    return clean_recipe_data(lst)
+    return clean_pairs_data(lst)
 
 
 def read_parquet(path: str) -> list[list[str]]:
@@ -114,7 +114,7 @@ def clean_recipe_data(lst: list[list]) -> list[list]:
     """
     clean_lst = []
     for row in lst:
-        recipe_id = int(row[ID_INDEX])
+        recipe_id = int(row[UID_INDEX])
         name = row[NAME_INDEX]
         steps = row[STEPS_INDEX]
         ingredients = process_varchar_list(row[INGREDIENTS_INDEX])

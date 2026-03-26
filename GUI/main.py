@@ -8,7 +8,7 @@ screen = pygame.display.set_mode((1000, 1000))
 main_menu_image_file_path = "images/white.jpg"
 algorithm_image_file_path = "images/white.jpg"
 search_image_file_path = "images/blue.jpeg"
-recipe_screen = "images/joker_placeholder.jpg"
+text_not_done = False
 
 # SCREENS
 main_menu_screen = screen_displays.Screen([], main_menu_image_file_path, screen)
@@ -40,8 +40,8 @@ algorithm_screen.buttons = [mm_button]
 search_image_screen.buttons = [mm_button]
 
 # Textboxes for search screen
-textbox_format = pygame.Rect(50, 50, 400, 60)
-algorithm_screen.textboxes = [screen_displays.TextBox(textbox_format, (50,250))]
+textbox_format = pygame.Rect(500, 500, 500, 500)
+algorithm_screen.textboxes = [screen_displays.TextBox(textbox_format, (50, 250))]
 
 
 running = True
@@ -51,15 +51,8 @@ while running:
         if event.type == pygame.QUIT:
             running = False
             break
-        if current_screen.curr_screen == algorithm_screen:
-            algorithm_screen.draw_screen()
-            current_screen.curr_screen.update_all_textboxes(event)
-        if current_screen.curr_screen.screen == search_image_screen:
-            search_image_screen.draw_screen()
-            # handle the searching of each object
-        if current_screen.curr_screen.screen == main_menu_screen:
-            main_menu_screen.draw_screen()
         current_screen.curr_screen.update_all_buttons(event)
+        current_screen.curr_screen.update_all_textboxes(event)
     current_screen.curr_screen.draw_screen()
     pygame.display.flip()
 

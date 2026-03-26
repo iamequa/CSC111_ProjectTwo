@@ -101,10 +101,10 @@ class Screen:  # pls add all the private attributes later as a reminder to mysel
         self.screen.blit(self.image, (0, 0))
         for button in self.buttons:
             button.draw_button(self.screen)
-        pygame.display.flip()
         if self.textboxes is not None:
             for textbox in self.textboxes:
                 textbox.draw_textbox(self.screen)
+        pygame.display.flip()
 
 
 class ScreenOrganizer:
@@ -136,6 +136,7 @@ class TextBox:
         self.color = BLACK
         self.font = pygame.font.SysFont("candara", 30)
         self.text_inputted = ''
+        self.text_active = False
 
     def draw_textbox(self, surface: pygame.Surface):
         """ Draws a textbox for user"""
@@ -145,23 +146,65 @@ class TextBox:
         surface.blit(text_surf, text_rect)
 
     def handle_textbox_input(self, event: pygame.event.Event) -> None:
-        """Helper function that will keep track of what the user types and stops inputting once enter key pressed
-        """
-        print("registered")
-        text_not_done = True
+        """Takes care of the textbox stuff"""
         if event.type == pygame.MOUSEBUTTONDOWN:
-            if not self.rect.collidepoint(event.pos):
-                text_not_done = False
-
-        if event.type == pygame.KEYDOWN and text_not_done:
-            if event.type == pygame.K_BACKSPACE:
-                self.text_inputted = self.text_inputted[:-1]
-            elif event.type == pygame.K_SPACE:
+            if self.rect.collidepoint(event.pos):
+                print('set to true')
+                self.text_active = True
+            else:
+                print('set to false')
+                self.text_active = False
+        if event.type == pygame.KEYDOWN and self.text_active:
+            if event.key == pygame.K_RETURN:
+                self.text_active = False
+                self._return_text_input()
+                self.clear_textbox()
+            elif event.key == pygame.K_SPACE:
                 self.text_inputted += ' '
-            elif event.type == pygame.K_RETURN:
-                text_not_done = False
+            elif event.key == pygame.K_BACKSPACE:
+                self.text_inputted = self.text_inputted[:-1]
             else:
                 self.text_inputted += event.unicode
+
+
+
+    # def can_type(self, text_not_done: bool, event: pygame.event.Event) -> bool:
+    #     """Returns if user can still type"""
+    #     if not text_not_done:
+    #         print(event.pos)
+    #         if event.type == pygame.MOUSEBUTTONDOWN:
+    #             if self.rect.collidepoint(event.pos):
+    #                 print('set to true')
+    #                 text_not_done = True
+    #     else:
+    #         if event.type == pygame.KEYDOWN and text_not_done:
+    #             if event.type == pygame.K_RETURN:
+    #                 print('set to false')
+    #                 text_not_done = False
+    #     return text_not_done
+    #
+    # def handle_textbox_input(self, event: pygame.event.Event, text_not_done: bool) -> None:
+    #     """Helper function that will keep track of what the user types and stops inputting once enter key pressed
+    #     """
+    #     text_not_done = self.can_type(text_not_done, event)
+    #     if event.type == pygame.KEYDOWN and text_not_done:
+    #         if event.type == pygame.K_BACKSPACE:
+    #             self.text_inputted = self.text_inputted[:-1]
+    #         elif event.type == pygame.K_SPACE:
+    #             self.text_inputted += ' '
+    #         elif event.type == pygame.KEYDOWN:
+    #             self.text_inputted += event.unicode
+    #     if not text_not_done:
+    #         self._return_text_input()
+    #         self.clear_textbox()
+    #
+    def _return_text_input(self):
+        """Returns what the user inputted in textbox."""
+        return self.text_inputted
+
+    def clear_textbox(self):
+        """Clears the textbox"""
+        self.text_inputted = ''
 
 
 def proceed_to_graph(search_screen: Screen, current_screen: ScreenOrganizer) -> None:

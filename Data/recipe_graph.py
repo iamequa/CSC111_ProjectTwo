@@ -22,6 +22,12 @@ NAME_SIMILARITY_INDEX = 3
 
 
 def build_recipe_graph(recipes_path: str, is_recipes_csv: bool, pairs_path: str, is_pairs_csv: bool) -> RecipeGraph:
+    """
+    Builds a recipe graph based off a file of recipes and recipe pairs
+
+    Preconditions:
+        - recipes_path and pairs_path are valid paths to the recipes and recipe_pairs csv/parquet
+    """
     recipes = file_reader.read_recipes_data(recipes_path, is_recipes_csv)
     recipe_pairs = file_reader.read_pairs_data(pairs_path, is_pairs_csv)
     graph = RecipeGraph()
@@ -42,6 +48,12 @@ def build_recipe_graph(recipes_path: str, is_recipes_csv: bool, pairs_path: str,
 
 
 def build_vertices(recipe: list, seen_vertices: dict[int | str, v.Vertex]) -> list[v.Vertex]:
+    """
+    Builds vertices based off the given recipe, ignoring the vertices if they've already been seen
+
+    Preconditions
+        - Recipe is a valid recipe list based off the format specified in file_reader.py's read_recipes_data method
+    """
     vertices = []
     recipe_vertex = v.Recipe(recipe[NAME_INDEX], recipe[UID_INDEX], recipe[STEPS_INDEX])
     vertices.append(recipe_vertex)
@@ -62,22 +74,43 @@ def build_vertices(recipe: list, seen_vertices: dict[int | str, v.Vertex]) -> li
 
     return vertices
 
+
 class RecipeGraph:
+    """
+    A recipe graph which is meant to connect recipes in terms of categories and ingredients they
+    are similar in. The way the structure works is very simple:
+
+    Every recipe vertex is connected to its ingredients and categories, and the ingredients and categories are
+    connected to all the recipes they are a part of. This makes comparing recipes very simple, as a Jaccard similarity
+    algorithm is all that is needed.
+
+    Instance Attributes:
+        - vertices: a mapping of recipe UIDs or ingredient/category names to their respective vertices
+    """
     vertices: dict[int | str, v.Vertex]
 
     def __init__(self):
         self.vertices = {}
 
     def add_vertex(self, vertex: v.Vertex) -> None:
+        """Adds the given vertex to the graph if it is not already contained."""
         if isinstance(vertex, v.Recipe) and vertex.get_id() not in self.vertices:
             self.vertices[vertex.get_id()] = vertex
         elif isinstance(vertex, v.Attribute) and vertex.get_name() not in self.vertices:
             self.vertices[vertex.get_name()] = vertex
 
-    def add_recipe_pair(self, base_uid: int, target_uid: int, category_uids: list[str]):
+    def add_recipe_pair(self, base_uid: int, target_uid: int, category_uids: list[str]) -> None:
+        """
+        Adds the base recipe as a recipe pair for the target recipe based off the categories specified. If either
+        the base or target recipe do not exist in this graph, do not add any recipe pair. If any of the categories does
+        not exist in this graph, that category does not get added.
+        """
+        if base_uid not in self.vertices or target_uid not in self.vertices:
+            return
         base = self.vertices[base_uid]
         target = self.vertices[target_uid]
         for category_uid in category_uids:
-            category = self.vertices[category_uid]
-            if isinstance(category, v.Category) and isinstance(base, v.Recipe) and isinstance(target, v.Recipe):
-                target.add_paired_recipe(category, base)
+            if category_uid in self.vertices:
+                category = self.vertices[category_uid]
+                if isinstance(category, v.Category) and isinstance(base, v.Recipe) and isinstance(target, v.Recipe):
+                    target.add_paired_recipe(category, base)

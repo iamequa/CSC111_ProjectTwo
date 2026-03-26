@@ -47,14 +47,43 @@ class RecipeFinder:
     Instance Attributes:
         - recipes : a recipe tree
     """
-    def __init__(self, recipes):
+    def __init__(self, recipes)-> None:
         self.recipes = recipes
 
-    def searchByName(self,name: str = None) -> list[Recipe]:
-        """ Returns a list of recipes matching the given name."""
+    def searchByName(self, name: str) -> list[Recipe]:
+        """Return all recipes whose name contains the given string."""
+        return self._search_helper(self.recipes, name.lower())
+
+    def _search_helper(self, tree, name: str) -> list[Recipe]:
+        """Recursive helper that searches the tree."""
+        # If at name_tokens level, filter directly
+        if tree.current_filter == NAME_TOKENS:
+            return [
+                recipe for recipe in tree.recipes.values()
+                if name in recipe.getName().lower()
+            ]
+        # Otherwise, search all subtrees
+        results = []
+        for subtree in tree.filters.values():
+            results.extend(self._search_helper(subtree, name))
+
+        return results
 
     def searchByFilters(self, ingredients: List[str], categories: List[str],name: str = None) -> list[Recipe]:
         """ Returns a list of recipes matching the given name and ingredients."""
+        # Step 1: Determine candidate recipes
+        if name is None:
+            candidates = self.recipes.values()
+        else:
+            candidates = self.searchByName(name)
+        # Step 2:  Filter candidates based on ingredients and categories
+        results = []
+        for recipe in candidates:
+            recipe_ingredient_names = {ingredient.name for ingredient in recipe.ingredients}
+            recipe_category_names = {category.name for category in recipe.categories}
+            if ingredients.issubset(recipe_ingredient_names) and categories.issubset(recipe_category_names):
+                results.append(recipe)
+        return results
 
 
 class Sorter:

@@ -115,17 +115,49 @@ class RecipeGraph:
                 if isinstance(category, v.Category) and isinstance(base, v.Recipe) and isinstance(target, v.Recipe):
                     target.add_paired_recipe(category, base)
 
-    def find_paired_recipe(self,recipe: int) -> list[v.Recipe]:
+    def _matches_user_preferences(self, recipe: v.Recipe,
+                                  ingredients: list[str],
+                                  categories: list[str],
+                                  name_tokens: list[str]) -> bool:
+        """Return True if recipe contains all the user-specified ingredients, categories, or name tokens."""
+
+        recipe_ingredients = {i.get_name().lower() for i in recipe.get_ingredients()}
+        recipe_categories = {c.get_name().lower() for c in recipe.get_categories()}
+        recipe_name = recipe.get_name().lower()
+
+        # Check ingredients
+        if ingredients and not any(ing.lower() in recipe_ingredients for ing in ingredients):
+            return False
+
+        # Check categories
+        if categories and not any(cat.lower() in recipe_categories for cat in categories):
+            return False
+
+        # Check name tokens
+        if name_tokens and not any(token.lower() in recipe_name for token in name_tokens):
+            return False
+
+        return True
+
+    def find_paired_recipe(self,recipe: int, ingredients: list[str], categories: list[str],name_tokens: list[str]
+                           ) -> list[v.Recipe]:
         """
-        Return direct recipes that are paired with the given recipe.
-        This retrieves all recipes that were previously linked using add_recipe_pair.
+        Return recipes that are explicitly paired with the given recipe
+        and also match the user’s preferences.
+
+        The method first retrieves all recipes previously linked via add_recipe_pair,
+        then filters them to include only recipes that contain at least one of the
+        specified ingredients, categories, or name tokens.
 
         Parameters:
             - recipe: UID of the recipe to find pairings for
+            - ingredients: list of ingredient names to filter by
+            - categories: list of category names to filter by
+            - name_tokens: list of tokens to match in the recipe name
 
         Returns:
-            - a list of paired Recipe objects
-            - returns an empty list if the recipe does not exist
+            - a list of paired Recipe objects that match the user preferences
+            - returns an empty list if no paired recipes exist or none match the filters
         """
 
         if recipe not in self.vertices:
@@ -136,22 +168,38 @@ class RecipeGraph:
         if not isinstance(recipe_vertex, v.Recipe):
             return []
 
-        return list(recipe_vertex.get_paired_recipes())
+        paired = list(recipe_vertex.get_paired_recipes())
 
-    def find_similar_recipe(self,recipe: int) -> list[v.Recipe]:
+        # Filter based on user preferences
+        filtered = [r for r in paired if isinstance(r, v.Recipe) and self._matches_user_preferences(r, ingredients, categories, name_tokens)]
+
+        return filtered
+
+    def find_similar_recipe(self,recipe: int, ingredients: list[str], categories: list[str],name_tokens: list[str]
+                            ) -> list[v.Recipe]:
         """
-        Return recipes similar to the given recipe based on shared ingredients and categories.
+        Return recipes similar to the given recipe based on shared ingredients
+        and categories, filtered to match user preferences.
 
-        Similarity is determined using overlap between:
-        - ingredients
-        - categories
+        Similarity is determined by the overlap between:
+            - ingredients
+            - categories
+
+        After computing similarity, only recipes that contain at least one of the
+        specified ingredients, categories, or name tokens are returned.
 
         Parameters:
             - recipe: UID of the reference recipe
+            - ingredients: list of ingredient names to filter by (optional)
+            - categories: list of category names to filter by (optional)
+            - name_tokens: list of tokens to match in the recipe name (optional)
 
         Returns:
             - a list of Recipe objects sorted by similarity (most similar first)
+            - only includes recipes matching the user preferences
+            - returns an empty list if no candidates exist or none match the filters
         """
+
         if recipe not in self.vertices:
             return []
 
@@ -160,33 +208,27 @@ class RecipeGraph:
         if not isinstance(base_recipe, v.Recipe):
             return []
 
-        #Step 1: Get base sets
         base_ingredients = {i.get_name() for i in base_recipe.get_ingredients()}
         base_categories = {c.get_name() for c in base_recipe.get_categories()}
 
-        #Step 2: Collect candidate recipes using graph
         candidate_recipes = set()
 
-        # From shared ingredients
         for ingredient in base_recipe.get_ingredients():
             for rec in ingredient.get_recipes():
                 if rec.get_id() != recipe:
                     candidate_recipes.add(rec)
 
-        # From shared categories
         for category in base_recipe.get_categories():
             for rec in category.get_recipes():
                 if rec.get_id() != recipe:
                     candidate_recipes.add(rec)
 
-        # Step 3: Compute similarity only for candidates
         similarities = []
-
         for other in candidate_recipes:
             other_ingredients = {i.get_name() for i in other.get_ingredients()}
             other_categories = {c.get_name() for c in other.get_categories()}
 
-            # Jaccard similarity
+            # Compute similarity
             ingredient_union = base_ingredients | other_ingredients
             category_union = base_categories | other_categories
 
@@ -195,9 +237,11 @@ class RecipeGraph:
 
             score = ingredient_score + category_score
 
-            similarities.append((score, other))
+            # Only include if matches user preferences
+            if self._matches_user_preferences(other, ingredients, categories, name_tokens):
+                similarities.append((score, other))
 
-        #Step 4: Sort by similarity
+        # Sort by similarity
         similarities.sort(reverse=True, key=lambda x: x[0])
-        return [recipe for _, recipe in similarities]
+        return [r for _, r in similarities]
 

@@ -135,6 +135,9 @@ class Attribute(Vertex):
     def __len__(self) -> int:
         return len(self._recipes)
 
+    def get_recipes(self) -> set[Recipe]:
+        return self._recipes
+
     # NOTE: Do NOT call this method directly outside of this file, creation of the graph will handle the
     # bidirectional design through the Recipe class
     def add_recipe(self, recipe: Recipe) -> None:

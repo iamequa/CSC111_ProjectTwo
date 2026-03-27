@@ -1,5 +1,3 @@
-import pygame
-
 
 class TextBoxProcessor:
     """This class processes what the user inputs and sends it to correct computation.
@@ -24,5 +22,9 @@ class TextBoxProcessor:
                 return 'Limit Reached'
         return None
 
-    def send_to_computation(self):
-        """Send to the correct computation"""
+    def send_to_computation(self, inputs: list[list[str]]):
+        """Send to the correct computation
+            Preconditions:
+                - len(inputs) == 4
+            """
+

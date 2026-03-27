@@ -43,7 +43,6 @@ class Button:
     def perform_event(self) -> None:
         """Checks over if event was a click, if click collided with button surface area then perform action
         """
-        print("action performed")
         self.action()
 
     def is_clicked(self, event: pygame.event.Event) -> bool:
@@ -51,7 +50,6 @@ class Button:
         """
         if event.type == pygame.MOUSEBUTTONDOWN:
             if self.rect.collidepoint(event.pos):
-                print("clicked")
                 return True
         return False
 
@@ -163,10 +161,8 @@ class TextBox:
         if self.enabled:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if self.rect.collidepoint(event.pos):
-                    print('set to true')
                     self.text_active = True
                 else:
-                    print('set to false')
                     self.text_active = False
             if event.type == pygame.KEYDOWN and self.text_active:
                 if event.key == pygame.K_RETURN:
@@ -222,3 +218,25 @@ def proceed_to_algorithm(algorithm_screen: Screen, current_screen: ScreenOrganiz
 def proceed_to_menu(main_screen: Screen, current_screen: ScreenOrganizer) -> None:
     """Switches the screen back to the main screen"""
     current_screen.switch_screens(main_screen)
+
+
+def store_all_answers(textbox1: TextBox, textbox2: TextBox, textbox3: TextBox, textbox4: TextBox) -> list | None:
+    """Takes all the values stored in each textbox and delivers it.
+        Preconditions:
+        - textbox1 is the dietary restrictions textbox
+        - textbox2 is the ingredients to use textbox
+        - textbox3 is the allergies textbox
+        - textbox4 is the recommendation textbox
+     """
+    count = 0
+    list_of_inputs = [textbox1.text_inputted, textbox2.text_inputted, textbox3.text_inputted, textbox4.text_inputted]
+    for val in list_of_inputs:
+        if val.strip().lower() == '':
+            count += 1
+    if count == 4:
+        return None
+    else:
+        return list_of_inputs
+
+
+

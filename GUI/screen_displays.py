@@ -2,6 +2,8 @@ from __future__ import annotations
 import pygame
 from typing import Callable, Optional
 
+from Processing.processing import TextBoxProcessor
+
 
 class Button:
     """Represents the buttons in Python.
@@ -70,8 +72,10 @@ class Screen:  # pls add all the private attributes later as a reminder to mysel
     buttons: list[Button]
     image_filepath: str
     textboxes: Optional[list[TextBox]] = None
+    text: Optional[list[Text]] = None
 
-    def __init__(self, buttons: list[Button], image_filepath: str, screen: pygame.Surface):
+    def __init__(self, buttons: list[Button], image_filepath: str, screen: pygame.Surface,
+                 textboxes: Optional[list[TextBox]] = None, text: Optional[list[Text]] = None):
         self.screen = screen
         self.WIDTH = 1000
         self.HEIGHT = 1000
@@ -79,6 +83,8 @@ class Screen:  # pls add all the private attributes later as a reminder to mysel
         self.image_filepath = image_filepath
         self.image = pygame.image.load(self.image_filepath)
         self.image = pygame.transform.scale(self.image, (self.WIDTH, self.HEIGHT))
+        self.textboxes = textboxes
+        self.text = text
 
     def update_all_buttons(self, event: pygame.event.Event) -> None:
         """Checks if all buttons are clicked in self."""
@@ -102,6 +108,9 @@ class Screen:  # pls add all the private attributes later as a reminder to mysel
         if self.textboxes is not None:
             for textbox in self.textboxes:
                 textbox.draw_textbox(self.screen)
+        if self.text is not None:
+            for text in self.text:
+                text.draw_text(self.screen)
         pygame.display.flip()
 
 
@@ -110,7 +119,6 @@ class ScreenOrganizer:
     curr_screen: Screen
 
     def __init__(self, screen: Screen):
-        # set to default screen
         self.curr_screen = screen
 
     def switch_screens(self, new_screen: Screen) -> None:
@@ -125,8 +133,10 @@ class TextBox:
     color: tuple[int, int, int]
     top_left_coordinates: tuple[int, int]
     _font: pygame.font.Font
+    _processor: TextBoxProcessor
+    limit: int
 
-    def __init__(self, rect: pygame.Rect, top_left_coordinates: tuple[int, int]):
+    def __init__(self, rect: pygame.Rect, top_left_coordinates: tuple[int, int], limit: int):
         BLACK = (0, 0, 0)
         self.rect = rect
         self.top_left_coordinates = top_left_coordinates
@@ -135,6 +145,7 @@ class TextBox:
         self.font = pygame.font.SysFont("candara", 30)
         self.text_inputted = ''
         self.text_active = False
+        self._processor = TextBoxProcessor(limit)
 
     def draw_textbox(self, surface: pygame.Surface):
         """ Draws a textbox for user"""
@@ -158,7 +169,7 @@ class TextBox:
         if event.type == pygame.KEYDOWN and self.text_active:
             if event.key == pygame.K_RETURN:
                 self.text_active = False
-                # do the extraction here
+                self._processor.process_final_answer(self.text_inputted) # processing is done here
                 self.clear_textbox()
             elif event.key == pygame.K_SPACE and len(self.text_inputted) < MAX_LENGTH:
                 self.text_inputted += ' '
@@ -168,20 +179,39 @@ class TextBox:
                 if len(self.text_inputted) < MAX_LENGTH:
                     self.text_inputted += event.unicode
 
-    def clear_textbox(self):
+    def clear_textbox(self) -> None:
         """Clears the textbox"""
         self.text_inputted = ''
 
 
+class Text:
+    """This class represents text on the screen"""
+    text: str
+    rect: pygame.rect.Rect
+    coordinates: tuple[int,int]
+    _font: pygame.font.Font
+
+    def __init__(self, text: str, rect: pygame.rect.Rect, coordinates: tuple[int,int]):
+        self.rect = rect
+        self._font = pygame.font.SysFont("candara", 30)
+        self.text = text
+        self.rect.topleft = coordinates
+
+    def draw_text(self, surface: pygame.Surface):
+        """Draws the text onto the screen"""
+        BLACK = (0, 0, 0)
+        text_surf = self._font.render(self.text, True, BLACK)
+        text_rect = text_surf.get_rect(center=self.rect.center)
+        surface.blit(text_surf, text_rect)
+
+
 def proceed_to_graph(search_screen: Screen, current_screen: ScreenOrganizer) -> None:
-    """Switches from current screen to search screen
-    """
+    """Switches from current screen to search screen. """
     current_screen.switch_screens(search_screen)
 
 
 def proceed_to_algorithm(algorithm_screen: Screen, current_screen: ScreenOrganizer) -> None:
-    """Switches from current screen to algorithm screen
-    """
+    """Switches from current screen to algorithm screen."""
     current_screen.switch_screens(algorithm_screen)
 
 

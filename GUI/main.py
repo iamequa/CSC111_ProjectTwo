@@ -41,9 +41,9 @@ search_image_screen.buttons = [mm_button]
 textbox_format1 = pygame.Rect(500, 500, 450, 60)
 textbox_format2 = pygame.Rect(500, 500, 450, 60)
 textbox_format3 = pygame.Rect(500, 500, 450, 60)
-textbox_q1 = screen_displays.TextBox(textbox_format1, (50, 150))
-textbox_q2 = screen_displays.TextBox(textbox_format2, (50, 350))
-textbox_q3 = screen_displays.TextBox(textbox_format3, (50, 550))
+textbox_q1 = screen_displays.TextBox(textbox_format1, (50, 150), 5)
+textbox_q2 = screen_displays.TextBox(textbox_format2, (50, 350), 5)
+textbox_q3 = screen_displays.TextBox(textbox_format3, (50, 550), 5)
 algorithm_screen.textboxes = [textbox_q1, textbox_q2, textbox_q3]
 
 

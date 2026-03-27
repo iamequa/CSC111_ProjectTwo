@@ -72,6 +72,7 @@ class Screen:  # pls add all the private attributes later as a reminder to mysel
     buttons: list[Button]
     image_filepath: str
     textboxes: Optional[list[TextBox]] = None
+    search_engine: Optional[SearchEngine] = None
 
     def __init__(self, buttons: list[Button], image_filepath: str, screen: pygame.Surface):
         self.screen = screen
@@ -94,6 +95,9 @@ class Screen:  # pls add all the private attributes later as a reminder to mysel
         if self.textboxes is not None:
             for textbox in self.textboxes:
                 textbox.handle_textbox_input(event)
+        if self.search_engine is not None:
+            self.search_engine.textbox.handle_textbox_input(event)
+
 
     def draw_screen(self) -> None:
         """Draws the screen in pygame with buttons.
@@ -101,6 +105,8 @@ class Screen:  # pls add all the private attributes later as a reminder to mysel
         self.screen.blit(self.image, (0, 0))
         for button in self.buttons:
             button.draw_button(self.screen)
+        if self.search_engine is not None:
+            self.search_engine.draw_search_bar((100, 50))
         if self.textboxes is not None:
             for textbox in self.textboxes:
                 textbox.draw_textbox(self.screen)
@@ -224,7 +230,7 @@ def proceed_to_menu(main_screen: Screen, current_screen: ScreenOrganizer) -> Non
     current_screen.switch_screens(main_screen)
 
 
-class SearchEngine():
+class SearchEngine:
     """
     A class that handles the computations of the search bar and the reuqired events.
     Instance Attributes:
@@ -232,24 +238,26 @@ class SearchEngine():
     - textbox: The textbox associated with the search bar
     - screen: The screen the SearchEngine operates on
     """
-    image: str
+    image: pygame.Surface
     textbox: TextBox
     screen: pygame.Surface
 
     def __init__(self, image: str,  screen: Screen):
-        self.image = image
+        self.image = pygame.image.load(image)
+        self.textbox = TextBox(self.image.get_rect(), (467, 117))
         self.screen = screen.screen
 
 # not necessarily needed for the class to finish
-    def draw_search_bar(self, coordinates: tuple[int, int], textbox_rect: pygame.Rect) -> None:
+    def draw_search_bar(self, coordinates: tuple[int, int]) -> None:
         """
         Draws a search bar on the coordinates given
         """
-        search_bar_graphic = pygame.image.load(self.image)
-        self.screen.blit(search_bar_graphic, coordinates)
+        search_bar_graphic = self.image
+        search_bar_graphic = pygame.transform.scale(search_bar_graphic, (467, 117))
+        textbox_rect = pygame.Rect(coordinates[0], coordinates[1], 467, 117)
         self.textbox = TextBox(textbox_rect, coordinates)
-        self.textbox.draw_textbox(self.screen)
-        print('search bar generated!')
+        self.textbox.draw_textbox(search_bar_graphic)
+        self.screen.blit(search_bar_graphic, coordinates)
 
     # TODO: figure out how to scroll and add buttons iteratively fron the return results funtion
     def draw_results_section(self, coordinates: tuple, section_graphic: str) -> None:
@@ -260,9 +268,6 @@ class SearchEngine():
         self.screen.blit(section_graphic, coordinates)
         # draw results section
         pygame.display.flip()
-        print('results graphics generated')
-
-
 
 
 class ResultsSection():
@@ -288,7 +293,7 @@ class ResultsSection():
         Draws the container for the results section
         """
         self.buttons = []
-        self.buttons = return_results(recipes)
+        self.buttons = self.return_results(recipes)
 
     def return_results(self, recipes: list[Recipe]) -> list[
         Button]:

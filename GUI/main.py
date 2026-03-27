@@ -1,6 +1,7 @@
 import pygame
 import sys
 import screen_displays
+from GUI.screen_displays import SearchEngine
 
 pygame.init()
 # INITILIAZERS (File Path)
@@ -28,6 +29,8 @@ si_color = (148, 124, 92)
 si_button = screen_displays.Button(si_rect, "Search", pa_color,
                                    lambda: screen_displays.proceed_to_graph(search_image_screen,
                                                                             current_screen), (400, 640))
+search_engine_for_screen = SearchEngine('images/search_bar .jpg', search_image_screen)
+
 # Algorithm Screen buttons
 mm_rect = pygame.Rect(50, 50, 200, 60)
 mm_color = (148, 124, 92)
@@ -38,7 +41,7 @@ mm_button = screen_displays.Button(mm_rect, "Return to Menu", pa_color,
 main_menu_screen.buttons = [pa_button, si_button]
 algorithm_screen.buttons = [mm_button]
 search_image_screen.buttons = [mm_button]
-
+search_image_screen.search_engine = search_engine_for_screen
 # Textboxes for search screen
 textbox_format = pygame.Rect(500, 500, 500, 500)
 algorithm_screen.textboxes = [screen_displays.TextBox(textbox_format, (50, 250))]
@@ -53,8 +56,11 @@ while running:
             break
         current_screen.curr_screen.update_all_buttons(event)
         current_screen.curr_screen.update_all_textboxes(event)
-    current_screen.curr_screen.draw_screen()
-    pygame.display.flip()
+    # if current_screen.curr_screen is search_image_screen:
+    #     search_engine.draw_search_bar((100, 50))
+    #     pygame.display.flip()
+        current_screen.curr_screen.draw_screen()
+        pygame.display.flip()
 
 pygame.quit()
 sys.exit()

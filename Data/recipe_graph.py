@@ -115,15 +115,22 @@ class RecipeGraph:
                 if isinstance(category, v.Category) and isinstance(base, v.Recipe) and isinstance(target, v.Recipe):
                     target.add_paired_recipe(category, base)
 
-    def _matches_user_preferences(self, recipe: v.Recipe,
-                                  ingredients: list[str],
-                                  categories: list[str],
-                                  name_tokens: list[str]) -> bool:
-        """Return True if recipe contains all the user-specified ingredients, categories, or name tokens."""
 
+    def _matches_user_preferences(self,categories: list[str], ingredients: list[str], allergies:list[str],recipe: v.Recipe
+                                  ) -> bool:
+        """Return True if recipe matches user preferences.
+
+        A recipe is valid if:
+        - It contains none of the specified allergens
+        - It contains at least one of the specified ingredients (if provided)
+        - It belongs to at least one of the specified categories (if provided)
+        """
         recipe_ingredients = {i.get_name().lower() for i in recipe.get_ingredients()}
         recipe_categories = {c.get_name().lower() for c in recipe.get_categories()}
-        recipe_name = recipe.get_name().lower()
+
+        # Check Allergies
+        if allergies and any(allergy.lower() in recipe_ingredients for allergy in allergies):
+            return False
 
         # Check ingredients
         if ingredients and not any(ing.lower() in recipe_ingredients for ing in ingredients):
@@ -133,13 +140,9 @@ class RecipeGraph:
         if categories and not any(cat.lower() in recipe_categories for cat in categories):
             return False
 
-        # Check name tokens
-        if name_tokens and not any(token.lower() in recipe_name for token in name_tokens):
-            return False
-
         return True
 
-    def find_paired_recipe(self,recipe: int, ingredients: list[str], categories: list[str],name_tokens: list[str]
+    def find_paired_recipe(self,categories: list[str], ingredients: list[str], allergies:list[str],recipe:int
                            ) -> list[v.Recipe]:
         """
         Return recipes that are explicitly paired with the given recipe
@@ -147,13 +150,7 @@ class RecipeGraph:
 
         The method first retrieves all recipes previously linked via add_recipe_pair,
         then filters them to include only recipes that contain at least one of the
-        specified ingredients, categories, or name tokens.
-
-        Parameters:
-            - recipe: UID of the recipe to find pairings for
-            - ingredients: list of ingredient names to filter by
-            - categories: list of category names to filter by
-            - name_tokens: list of tokens to match in the recipe name
+        specified ingredients, categories, and doesn't contain any of †he specified ingredients in allergies.
 
         Returns:
             - a list of paired Recipe objects that match the user preferences
@@ -171,11 +168,12 @@ class RecipeGraph:
         paired = list(recipe_vertex.get_paired_recipes())
 
         # Filter based on user preferences
-        filtered = [r for r in paired if isinstance(r, v.Recipe) and self._matches_user_preferences(r, ingredients, categories, name_tokens)]
+        filtered = [r for r in paired if isinstance(r, v.Recipe) and self._matches_user_preferences(categories, ingredients, allergies,
+                                                                                                    r)]
 
         return filtered
 
-    def find_similar_recipe(self,recipe: int, ingredients: list[str], categories: list[str],name_tokens: list[str]
+    def find_similar_recipe(self,categories: list[str], ingredients: list[str], allergies:list[str],recipe: int
                             ) -> list[v.Recipe]:
         """
         Return recipes similar to the given recipe based on shared ingredients
@@ -208,8 +206,8 @@ class RecipeGraph:
         if not isinstance(base_recipe, v.Recipe):
             return []
 
-        base_ingredients = {i.get_name() for i in base_recipe.get_ingredients()}
-        base_categories = {c.get_name() for c in base_recipe.get_categories()}
+        base_ingredients = {i.get_name().lower() for i in base_recipe.get_ingredients()}
+        base_categories = {c.get_name().lower() for c in base_recipe.get_categories()}
 
         candidate_recipes = set()
 
@@ -238,10 +236,18 @@ class RecipeGraph:
             score = ingredient_score + category_score
 
             # Only include if matches user preferences
-            if self._matches_user_preferences(other, ingredients, categories, name_tokens):
+            if self._matches_user_preferences(categories, ingredients,allergies,other):
                 similarities.append((score, other))
 
         # Sort by similarity
         similarities.sort(reverse=True, key=lambda x: x[0])
         return [r for _, r in similarities]
 
+    def compute_alternative_recipe(self,categories: list[str], ingredients: list[str], allergies:list[str],recipe:int
+                                   ) -> list[v.Recipe]:
+
+        paired = self.find_paired_recipe(categories,ingredients,allergies,recipe)
+        if not paired == []:
+            return paired
+        else:
+            return self.find_similar_recipe(categories,ingredients,allergies,recipe)

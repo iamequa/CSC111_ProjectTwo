@@ -139,12 +139,15 @@ class TextBox:
     def draw_textbox(self, surface: pygame.Surface):
         """ Draws a textbox for user"""
         BLACK = (0, 0, 0)
+        BEIGE = (245, 245, 220)
         text_surf = self.font.render(self.text_inputted, True, BLACK)
         text_rect = text_surf.get_rect(center=self.rect.center)
+        pygame.draw.rect(surface, BEIGE, self.rect, 60)
         surface.blit(text_surf, text_rect)
 
     def handle_textbox_input(self, event: pygame.event.Event) -> None:
         """Takes care of the textbox stuff"""
+        MAX_LENGTH = 40
         if event.type == pygame.MOUSEBUTTONDOWN:
             if self.rect.collidepoint(event.pos):
                 print('set to true')
@@ -155,50 +158,15 @@ class TextBox:
         if event.type == pygame.KEYDOWN and self.text_active:
             if event.key == pygame.K_RETURN:
                 self.text_active = False
-                self._return_text_input()
+                # do the extraction here
                 self.clear_textbox()
-            elif event.key == pygame.K_SPACE:
+            elif event.key == pygame.K_SPACE and len(self.text_inputted) < MAX_LENGTH:
                 self.text_inputted += ' '
             elif event.key == pygame.K_BACKSPACE:
                 self.text_inputted = self.text_inputted[:-1]
             else:
-                self.text_inputted += event.unicode
-
-
-
-    # def can_type(self, text_not_done: bool, event: pygame.event.Event) -> bool:
-    #     """Returns if user can still type"""
-    #     if not text_not_done:
-    #         print(event.pos)
-    #         if event.type == pygame.MOUSEBUTTONDOWN:
-    #             if self.rect.collidepoint(event.pos):
-    #                 print('set to true')
-    #                 text_not_done = True
-    #     else:
-    #         if event.type == pygame.KEYDOWN and text_not_done:
-    #             if event.type == pygame.K_RETURN:
-    #                 print('set to false')
-    #                 text_not_done = False
-    #     return text_not_done
-    #
-    # def handle_textbox_input(self, event: pygame.event.Event, text_not_done: bool) -> None:
-    #     """Helper function that will keep track of what the user types and stops inputting once enter key pressed
-    #     """
-    #     text_not_done = self.can_type(text_not_done, event)
-    #     if event.type == pygame.KEYDOWN and text_not_done:
-    #         if event.type == pygame.K_BACKSPACE:
-    #             self.text_inputted = self.text_inputted[:-1]
-    #         elif event.type == pygame.K_SPACE:
-    #             self.text_inputted += ' '
-    #         elif event.type == pygame.KEYDOWN:
-    #             self.text_inputted += event.unicode
-    #     if not text_not_done:
-    #         self._return_text_input()
-    #         self.clear_textbox()
-    #
-    def _return_text_input(self):
-        """Returns what the user inputted in textbox."""
-        return self.text_inputted
+                if len(self.text_inputted) < MAX_LENGTH:
+                    self.text_inputted += event.unicode
 
     def clear_textbox(self):
         """Clears the textbox"""

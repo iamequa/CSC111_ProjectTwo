@@ -38,8 +38,13 @@ algorithm_screen.buttons = [mm_button]
 search_image_screen.buttons = [mm_button]
 
 # Textboxes for search screen
-textbox_format = pygame.Rect(500, 500, 500, 500)
-algorithm_screen.textboxes = [screen_displays.TextBox(textbox_format, (50, 250))]
+textbox_format1 = pygame.Rect(500, 500, 450, 60)
+textbox_format2 = pygame.Rect(500, 500, 450, 60)
+textbox_format3 = pygame.Rect(500, 500, 450, 60)
+textbox_q1 = screen_displays.TextBox(textbox_format1, (50, 150))
+textbox_q2 = screen_displays.TextBox(textbox_format2, (50, 350))
+textbox_q3 = screen_displays.TextBox(textbox_format3, (50, 550))
+algorithm_screen.textboxes = [textbox_q1, textbox_q2, textbox_q3]
 
 
 running = True

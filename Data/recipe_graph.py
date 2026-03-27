@@ -115,32 +115,22 @@ class RecipeGraph:
                 if isinstance(category, v.Category) and isinstance(base, v.Recipe) and isinstance(target, v.Recipe):
                     target.add_paired_recipe(category, base)
 
+    def _matches_user_preferences_sets(self, categories, ingredients, allergies,
+                                       recipe_ingredients: set, recipe_categories: set) -> bool:
+        if allergies and any(a.lower() in recipe_ingredients for a in allergies):
+            return False
+        if ingredients and not any(i.lower() in recipe_ingredients for i in ingredients):
+            return False
+        if categories and not any(c.lower() in recipe_categories for c in categories):
+            return False
+        return True
 
-    def _matches_user_preferences(self,categories: list[str], ingredients: list[str], allergies:list[str],recipe: v.Recipe
-                                  ) -> bool:
-        """Return True if recipe matches user preferences.
+    def _matches_user_preferences(self, categories, ingredients, allergies, recipe: v.Recipe) -> bool:
 
-        A recipe is valid if:
-        - It contains none of the specified allergens
-        - It contains at least one of the specified ingredients (if provided)
-        - It belongs to at least one of the specified categories (if provided)
-        """
         recipe_ingredients = {i.get_name().lower() for i in recipe.get_ingredients()}
         recipe_categories = {c.get_name().lower() for c in recipe.get_categories()}
-
-        # Check Allergies
-        if allergies and any(allergy.lower() in recipe_ingredients for allergy in allergies):
-            return False
-
-        # Check ingredients
-        if ingredients and not any(ing.lower() in recipe_ingredients for ing in ingredients):
-            return False
-
-        # Check categories
-        if categories and not any(cat.lower() in recipe_categories for cat in categories):
-            return False
-
-        return True
+        return self._matches_user_preferences_sets(categories, ingredients, allergies,
+                                                   recipe_ingredients, recipe_categories)
 
     def find_paired_recipe(self,categories: list[str], ingredients: list[str], allergies:list[str],recipe:int
                            ) -> list[v.Recipe]:
@@ -223,8 +213,8 @@ class RecipeGraph:
 
         similarities = []
         for other in candidate_recipes:
-            other_ingredients = {i.get_name() for i in other.get_ingredients()}
-            other_categories = {c.get_name() for c in other.get_categories()}
+            other_ingredients = {i.get_name().lower() for i in other.get_ingredients()}
+            other_categories = {c.get_name().lower() for c in other.get_categories()}
 
             # Compute similarity
             ingredient_union = base_ingredients | other_ingredients
@@ -236,7 +226,8 @@ class RecipeGraph:
             score = ingredient_score + category_score
 
             # Only include if matches user preferences
-            if self._matches_user_preferences(categories, ingredients,allergies,other):
+            if self._matches_user_preferences_sets(categories, ingredients, allergies,
+                                                   other_ingredients, other_categories):
                 similarities.append((score, other))
 
         # Sort by similarity

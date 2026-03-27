@@ -159,5 +159,41 @@ class RecipeTree:
         recipe_list = self.recipes.values()
         return sorted(recipe_list, key=lambda recipe: len(recipe.get_ingredients()))
 
-    def search_by_name(self, name: str) -> list[vertex.Recipe]:
-        return []
+    def search_by_name(self, name: str | None = None) -> list[vertex.Recipe]:
+        if name is None:
+            return []
+
+        cleaned_name = name.lower().strip()
+        name_tokens = cleaned_name.split()
+        token_recipe_sets = []
+        for token in name_tokens:
+            matched_recipes = set()
+            for candidate in self.filters:
+                if candidate.startswith(token):
+                    matched_recipes.update(self.filters[candidate].recipes.values())
+            token_recipe_sets.append(matched_recipes)
+        if not token_recipe_sets:
+            return []
+        result = set.intersection(*token_recipe_sets)
+        return list(result)
+
+    def search_by_filters(self, ingredients: list[str], categories: list[str], name: str | None = None) -> (
+            list)[vertex.Recipe]:
+
+        ingredients_set = set(ingredients)
+        categories_set = set(categories)
+
+        if name is None:
+            candidates = self.recipes.values()
+        else:
+            candidates = self.search_by_name(name)
+
+        results = []
+        for recipe in candidates:
+            ingredient_names = {ingredient.get_name() for ingredient in recipe.get_ingredients()}
+            category_names = {category.get_name() for category in recipe.get_categories()}
+            if ingredients_set.issubset(ingredient_names) and categories_set.issubset(category_names):
+                results.append(recipe)
+        return results
+
+

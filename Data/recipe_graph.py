@@ -114,3 +114,90 @@ class RecipeGraph:
                 category = self.vertices[category_uid]
                 if isinstance(category, v.Category) and isinstance(base, v.Recipe) and isinstance(target, v.Recipe):
                     target.add_paired_recipe(category, base)
+
+    def find_paired_recipe(self,recipe: int) -> list[v.Recipe]:
+        """
+        Return direct recipes that are paired with the given recipe.
+        This retrieves all recipes that were previously linked using add_recipe_pair.
+
+        Parameters:
+            - recipe: UID of the recipe to find pairings for
+
+        Returns:
+            - a list of paired Recipe objects
+            - returns an empty list if the recipe does not exist
+        """
+
+        if recipe not in self.vertices:
+            return []
+
+        recipe_vertex = self.vertices[recipe]
+
+        if not isinstance(recipe_vertex, v.Recipe):
+            return []
+
+        return list(recipe_vertex.get_paired_recipes())
+
+    def find_similar_recipe(self,recipe: int) -> list[v.Recipe]:
+        """
+        Return recipes similar to the given recipe based on shared ingredients and categories.
+
+        Similarity is determined using overlap between:
+        - ingredients
+        - categories
+
+        Parameters:
+            - recipe: UID of the reference recipe
+
+        Returns:
+            - a list of Recipe objects sorted by similarity (most similar first)
+        """
+        if recipe not in self.vertices:
+            return []
+
+        base_recipe = self.vertices[recipe]
+
+        if not isinstance(base_recipe, v.Recipe):
+            return []
+
+        #Step 1: Get base sets
+        base_ingredients = {i.get_name() for i in base_recipe.get_ingredients()}
+        base_categories = {c.get_name() for c in base_recipe.get_categories()}
+
+        #Step 2: Collect candidate recipes using graph
+        candidate_recipes = set()
+
+        # From shared ingredients
+        for ingredient in base_recipe.get_ingredients():
+            for rec in ingredient.get_recipes():
+                if rec.get_id() != recipe:
+                    candidate_recipes.add(rec)
+
+        # From shared categories
+        for category in base_recipe.get_categories():
+            for rec in category.get_recipes():
+                if rec.get_id() != recipe:
+                    candidate_recipes.add(rec)
+
+        # Step 3: Compute similarity only for candidates
+        similarities = []
+
+        for other in candidate_recipes:
+            other_ingredients = {i.get_name() for i in other.get_ingredients()}
+            other_categories = {c.get_name() for c in other.get_categories()}
+
+            # Jaccard similarity
+            ingredient_union = base_ingredients | other_ingredients
+            category_union = base_categories | other_categories
+
+            ingredient_score = len(base_ingredients & other_ingredients) / max(1, len(ingredient_union))
+            category_score = len(base_categories & other_categories) / max(1, len(category_union))
+
+            score = ingredient_score + category_score
+
+            similarities.append((score, other))
+
+        #Step 4: Sort by similarity
+        similarities.sort(reverse=True, key=lambda x: x[0])
+        return [recipe for _, recipe in similarities]
+

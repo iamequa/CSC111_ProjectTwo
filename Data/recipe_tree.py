@@ -150,3 +150,93 @@ class RecipeTree:
 
     def __contains__(self, uid: int) -> bool:
         return uid in self.recipes
+
+
+    def sort_by_name(self) -> list[vertex.Recipe]:
+        recipe_list = self.recipes.values()
+        return sorted(recipe_list, key=lambda recipe: len(recipe.get_name()))
+
+    def sort_by_ingredient_count(self) -> list[vertex.Recipe]:
+        recipe_list = self.recipes.values()
+        return sorted(recipe_list, key=lambda recipe: len(recipe.get_ingredients()))
+
+    def search_by_name(self, name: str | None = None) -> list[vertex.Recipe]:
+        """
+        Return a list of recipes whose names partially match the given query.
+
+        The search is case-insensitive and supports partial matching:
+        - The input string is split into tokens
+        - Each token is matched against name_tokens in the tree using prefix matching
+        - Only recipes that match ALL tokens are returned
+
+        Parameters:
+            - name: the search query string
+
+        Returns:
+            - a list of Recipe objects whose names match the query
+            - returns an empty list if name is None or no matches are found
+        """
+        if name is None:
+            return []
+
+        cleaned_name = name.lower().strip()
+        name_tokens = cleaned_name.split()
+        token_recipe_sets = []
+        for token in name_tokens:
+            matched_recipes = set()
+            for candidate in self.filters:
+                if candidate.startswith(token):
+                    matched_recipes.update(self.filters[candidate].recipes.values())
+            token_recipe_sets.append(matched_recipes)
+        if not token_recipe_sets:
+            return []
+        result = set.intersection(*token_recipe_sets)
+        return list(result)
+
+    def search_by_filters(self, ingredients: list[str], categories: list[str], name: str | None = None
+) -> list[vertex.Recipe]:
+        """
+           Return a list of recipes that match the given ingredient, category, and optional name filters.
+
+           The filtering process works as follows:
+           - If a name is provided, first narrow down candidates using search_by_name
+           - Otherwise, consider all recipes in the current tree
+           - Then filter recipes such that:
+               * All specified ingredients are present in the recipe
+               * All specified categories are present in the recipe
+
+           Parameters:
+               - ingredients: a list of ingredient names that must be included
+               - categories: a list of category names that must be included
+               - name: an optional name query for partial matching
+
+           Returns:
+               - a list of Recipe objects satisfying all given filters
+           """
+        ingredients_set = set(ingredients)
+        categories_set = set(categories)
+
+        if name is None:
+            candidates = self.recipes.values()
+        else:
+            candidates = self.search_by_name(name)
+
+        results = []
+        for recipe in candidates:
+            ingredient_names = {ingredient.get_name() for ingredient in recipe.get_ingredients()}
+            category_names = {category.get_name() for category in recipe.get_categories()}
+            if ingredients_set.issubset(ingredient_names) and categories_set.issubset(category_names):
+                results.append(recipe)
+        return results
+
+    #to be implemented gang
+    def find_recommendations(self,ingredients: list[str],categories: list[str],name_tokens: list[str]) -> list[Recipe]:
+        """Return a list of the top 3 recipes that best match the given user preferences.
+
+        Recipes are scored based on how well they match the provided criteria.
+        Matches contribute to the score as follows:
+            - Each matching ingredient contributes 2 points
+            - Each matching category contributes 3 points
+            - Each matching name token contributes 1 point
+
+        The method returns the 3 recipes with the highest total scores."""

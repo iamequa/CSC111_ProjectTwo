@@ -44,6 +44,8 @@ class AlternativeComputer:
         """"finds a paired recipe based on the given recipe and ingredients."""
 
 
+
+#THIS SHIT IS ALSO DONE ( I COPIED NEW IMPLEMENTATION FROM RECIPE GRAPH SO THE PARAMETERS DON'T WORK HERE!)
 class RecipeFinder:
     """" A class for finding recipes from a recipe tree.
     This class provides functionality to search recipes either by name
@@ -56,24 +58,25 @@ class RecipeFinder:
     def __init__(self, recipes)-> None:
         self.recipes = recipes
 
+    #so FUCK my BAKA CHUNGUS LIFE
     def searchByName(self, name: str) -> list[Recipe]:
         """Return all recipes whose name contains the given string."""
-        return self._search_helper(self.recipes, name.lower())
+        if name is None:
+            return []
 
-    def _search_helper(self, tree, name: str) -> list[Recipe]:
-        """Recursive helper that searches the tree."""
-        # If at name_tokens level, filter directly
-        if tree.current_filter == NAME_TOKENS:
-            return [
-                recipe for recipe in tree.recipes.values()
-                if name in recipe.getName().lower()
-            ]
-        # Otherwise, search all subtrees
-        results = []
-        for subtree in tree.filters.values():
-            results.extend(self._search_helper(subtree, name))
-
-        return results
+        cleaned_name = name.lower().strip()
+        name_tokens = cleaned_name.split()
+        token_recipe_sets = []
+        for token in name_tokens:
+            matched_recipes = set()
+            for candidate in self.filters:
+                if candidate.startswith(token):
+                    matched_recipes.update(self.filters[candidate].recipes.values())
+            token_recipe_sets.append(matched_recipes)
+        if not token_recipe_sets:
+            return []
+        result = set.intersection(*token_recipe_sets)
+        return list(result)
 
     def searchByFilters(self, ingredients: list[str], categories: list[str],name: str = None) -> list[Recipe]:
         """ Returns a list of recipes matching the given name and ingredients."""
@@ -92,6 +95,7 @@ class RecipeFinder:
         return results
 
 
+#THIS SHIT IS DONE
 class Sorter:
     """A utility class for sorting lists of recipes."""
     def sort_by_name(self, recipes: list[Recipe]) -> list[Recipe]:

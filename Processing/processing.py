@@ -1,3 +1,6 @@
+import pygame
+
+
 class TextBoxProcessor:
     """This class processes what the user inputs and sends it to correct computation.
         Instance Attributes:
@@ -15,10 +18,11 @@ class TextBoxProcessor:
     def process_final_answer(self, text_inputted: str):
         """Updates final answer """
         if len(self.all_text_inputted) < self.limit:
+            print('if reached')
             self.all_text_inputted.append(text_inputted)
-        else:
-            return # I wanted to add a Text Object here to pop up on the screen, only issue is idk how to remove it
+            if len(self.all_text_inputted) == self.limit:
+                return 'Limit Reached'
+        return None
 
     def send_to_computation(self):
         """Send to the correct computation"""
-

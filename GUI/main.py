@@ -37,7 +37,10 @@ main_menu_screen.buttons = [pa_button, si_button]
 algorithm_screen.buttons = [mm_button]
 search_image_screen.buttons = [mm_button]
 
-# Textboxes for search screen
+# Text for the algorithm screen
+text_format2= None
+
+# Textboxes for algorithm screen
 textbox_format1 = pygame.Rect(500, 500, 450, 60)
 textbox_format2 = pygame.Rect(500, 500, 450, 60)
 textbox_format3 = pygame.Rect(500, 500, 450, 60)

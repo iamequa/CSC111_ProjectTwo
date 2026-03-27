@@ -146,6 +146,7 @@ class TextBox:
         self.text_inputted = ''
         self.text_active = False
         self._processor = TextBoxProcessor(limit)
+        self.enabled = True
 
     def draw_textbox(self, surface: pygame.Surface):
         """ Draws a textbox for user"""
@@ -159,25 +160,28 @@ class TextBox:
     def handle_textbox_input(self, event: pygame.event.Event) -> None:
         """Takes care of the textbox stuff"""
         MAX_LENGTH = 40
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            if self.rect.collidepoint(event.pos):
-                print('set to true')
-                self.text_active = True
-            else:
-                print('set to false')
-                self.text_active = False
-        if event.type == pygame.KEYDOWN and self.text_active:
-            if event.key == pygame.K_RETURN:
-                self.text_active = False
-                self._processor.process_final_answer(self.text_inputted) # processing is done here
-                self.clear_textbox()
-            elif event.key == pygame.K_SPACE and len(self.text_inputted) < MAX_LENGTH:
-                self.text_inputted += ' '
-            elif event.key == pygame.K_BACKSPACE:
-                self.text_inputted = self.text_inputted[:-1]
-            else:
-                if len(self.text_inputted) < MAX_LENGTH:
-                    self.text_inputted += event.unicode
+        if self.enabled:
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if self.rect.collidepoint(event.pos):
+                    print('set to true')
+                    self.text_active = True
+                else:
+                    print('set to false')
+                    self.text_active = False
+            if event.type == pygame.KEYDOWN and self.text_active:
+                if event.key == pygame.K_RETURN:
+                    self.text_active = False
+                    process = self._processor.process_final_answer(self.text_inputted)
+                    if process is not None:
+                        self.enabled = False
+                    self.clear_textbox()
+                elif event.key == pygame.K_SPACE and len(self.text_inputted) < MAX_LENGTH:
+                    self.text_inputted += ' '
+                elif event.key == pygame.K_BACKSPACE:
+                    self.text_inputted = self.text_inputted[:-1]
+                else:
+                    if len(self.text_inputted) < MAX_LENGTH:
+                        self.text_inputted += event.unicode
 
     def clear_textbox(self) -> None:
         """Clears the textbox"""

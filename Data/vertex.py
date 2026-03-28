@@ -28,6 +28,9 @@ class Vertex:
         """Return the name of this vertex"""
         return self._name
 
+    def get_recipes(self):
+        pass
+
 
 class Recipe(Vertex):
     """

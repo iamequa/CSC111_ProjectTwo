@@ -5,8 +5,9 @@
 This Python module contains code for a recipe graph data structure in our recipe index application.
 """
 from __future__ import annotations
-import vertex as v
+
 import file_reader
+import vertex as v
 
 UID_INDEX = 0
 NAME_INDEX = 1
@@ -242,3 +243,69 @@ class RecipeGraph:
             return paired
         else:
             return self.find_similar_recipe(categories,ingredients,allergies,recipe)
+
+
+    #to be implemented gang
+    def find_recommendations(self, categories: list[str], ingredients: list[str],
+                             allergies: list[str]) -> list[v.Recipe]:
+        """Return a list of the top 3 recipes that best match the given user preferences.
+
+            Uses the graph structure for efficient candidate retrieval by directly looking up
+            ingredient and category vertices and collecting the recipes connected to them.
+            This avoids scanning all recipes entirely.
+
+            Matches contribute to the score as follows:
+                - Each matching ingredient contributes 2 points
+                - Each matching category contributes 3 points
+
+            Parameters:
+                - ingredients: a list of ingredient names to match against
+                - categories: a list of category names to match against
+                - allergies: a list of ingredient names to exclude recipes by
+
+            Returns:
+                - a list of up to 3 Recipe objects with the highest scores
+                - returns an empty list if no recipes match or all are excluded by allergies
+            """
+
+        ingredients_lower = {i.lower() for i in ingredients}
+        categories_lower = {c.lower() for c in categories}
+        allergies_lower = {a.lower() for a in allergies}
+
+        # Collect all recipes connected to matching ingredient vertices
+        ingredient_candidates = set()
+        for ing_name in ingredients_lower:
+            if ing_name in self.vertices:
+                ing_vertex = self.vertices[ing_name]
+                if isinstance(ing_vertex, v.Ingredient):
+                    ingredient_candidates.update(ing_vertex.get_recipes())
+
+        # Collect all recipes connected to matching ingredient vertices
+        categeoories_candidates = set()
+        for cat_name in categories_lower: #meow :3
+            if cat_name in self.vertices:
+                cat_vertex = self.vertices[cat_name]
+                if isinstance(cat_vertex, v.Ingredient):
+                    categeoories_candidates.update(cat_vertex.get_recipes())
+
+        allergen_recipes = set()
+        for allergy in allergies_lower:
+            if allergy in self.vertices and isinstance(self.vertices[allergy], v.Ingredient):
+                allergen_recipes.update(self.vertices[allergy].get_recipes())
+
+        # Score by most matches
+        candidates = (ingredient_candidates | categeoories_candidates) - allergen_recipes
+        scores = []
+        for r in candidates:
+            recipe_ingredients = {i.get_name().lower() for i in r.get_ingredients()}
+            recipe_categories = {c.get_name().lower() for c in r.get_categories()}
+
+            ingredient_score = len(ingredients_lower & recipe_ingredients) * 2
+            category_score = len(categories_lower & recipe_categories) * 3
+            total = ingredient_score + category_score
+
+            if total > 0:
+                scores.append((total, r))
+
+        scores.sort(reverse=True, key=lambda x: x[0])
+        return [r for _, r in scores[:3]]

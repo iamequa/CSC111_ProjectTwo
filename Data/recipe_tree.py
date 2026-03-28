@@ -5,8 +5,8 @@
 This Python module contains code for a recipe tree data structure in our recipe index application.
 """
 from __future__ import annotations
-import vertex
-import file_reader
+import Data.vertex as vertex
+import Data.file_reader as file_reader
 
 UID_INDEX = 0
 NAME_INDEX = 1

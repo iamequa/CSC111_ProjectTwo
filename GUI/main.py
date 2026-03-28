@@ -94,7 +94,7 @@ algorithm_screen_textboxes = [textbox_q1, textbox_q2, textbox_q3, textbox_q4]
 main_menu_screen = screen_displays.Screen(main_menu_screen_buttons, main_menu_image_file_path, screen,
                                           text=main_menu_screen_text)
 algorithm_screen = screen_displays.Screen(algorithm_screen_buttons, algorithm_image_file_path, screen,
-                                       algorithm_screen_textboxes, algorithm_screen_text)
+                                          algorithm_screen_textboxes, algorithm_screen_text)
 search_screen = screen_displays.Screen(search_image_screen_buttons, search_image_file_path, screen)
 current_screen = screen_displays.ScreenOrganizer(main_menu_screen)
 current_screen.curr_screen = main_menu_screen
@@ -105,7 +105,6 @@ main_menu_processor = processing.MainMenuProcessor(current_screen, algorithm_scr
 MM1_button.action = lambda: main_menu_processor.go_to_survey()
 MM2_button.action = lambda: main_menu_processor.go_to_search()
 
-
 algorithm_screen_processor = processing.AlgorithmProcessor(current_screen, algorithm_screen, main_menu_screen, None)
 AS1_button.action = lambda: algorithm_screen_processor.go_to_main_menu()
 AS2_button.action = lambda: algorithm_screen_processor.give_recommendation()
@@ -113,7 +112,6 @@ AS2_button.action = lambda: algorithm_screen_processor.give_recommendation()
 search_screen_processor = processing.SearchProcessor(current_screen, search_screen, main_menu_screen, None)
 SI1_button.action = lambda: search_screen_processor.go_to_main_menu()
 SI2_button.action = lambda: search_screen_processor.search()
-
 
 running = True
 

@@ -22,7 +22,7 @@ class Button:
     def __init__(self, rect: pygame.Rect, text: str, color: tuple[int, int, int],
                  action: Callable[..., None] | None, top_left_coordinates: tuple[int, int]):
         self.rect = rect
-        self.font = pygame.font.Font("design_features/font/ShadowsIntoLightTwo-Regular.ttf", 30)
+        self.font = pygame.font.Font("GUI/design_features/font/ShadowsIntoLightTwo-Regular.ttf", 30)
         self.text = text
         self.color = color
         self.action = action
@@ -180,7 +180,7 @@ class TextBox:
             if event.type == pygame.KEYDOWN and self.text_active:
                 if event.key == pygame.K_RETURN:
                     self.text_active = False
-                    process = self.processor.process_final_answer(self.text_inputted)
+                    process = self.process_final_answer(self.text_inputted)
                     if process is not None:
                         self.enabled = False
                     self.clear_textbox()
@@ -198,7 +198,7 @@ class TextBox:
 
     def refresh_textbox(self) -> None:
         """Refreshes and re-enables textbox."""
-        self.processor.refresh_answers()
+        self.refresh_answers()
         self.clear_textbox()
         self.enabled = True
 

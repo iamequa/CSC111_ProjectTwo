@@ -5,9 +5,8 @@
 This Python module contains code for a recipe graph data structure in our recipe index application.
 """
 from __future__ import annotations
-
-import file_reader
-import vertex as v
+import Data.file_reader as file_reader
+import Data.vertex as v
 
 UID_INDEX = 0
 NAME_INDEX = 1

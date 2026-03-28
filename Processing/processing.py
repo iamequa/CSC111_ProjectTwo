@@ -8,10 +8,13 @@ class TextBoxProcessor:
     """
     all_text_inputted: list[str]
     limit: int
+    # add recipe tree
 
     def __init__(self, limit: int):
         self.all_text_inputted = []
         self.limit = limit
+        self.recipe_tree = None
+        self.recipe_graph = None
 
     def process_final_answer(self, text_inputted: str):
         """Updates final answer """
@@ -26,5 +29,15 @@ class TextBoxProcessor:
         """Send to the correct computation
             Preconditions:
                 - len(inputs) == 4
+                - len(inputs) is in the order of previous method
             """
+        q1, q2, q3, q4 = inputs[0], inputs[1], inputs[2], inputs[3]
+        if q4[0].strip() == '':
+            ... # implement recipe graph
+        else:
+
+            ... # implement tree graoh
+
+
+
 

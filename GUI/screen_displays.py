@@ -131,7 +131,7 @@ class TextBox:
     color: tuple[int, int, int]
     top_left_coordinates: tuple[int, int]
     _font: pygame.font.Font
-    _processor: TextBoxProcessor
+    processor: TextBoxProcessor
     limit: int
 
     def __init__(self, rect: pygame.Rect, top_left_coordinates: tuple[int, int], limit: int):
@@ -143,7 +143,7 @@ class TextBox:
         self.font = pygame.font.SysFont("candara", 30)
         self.text_inputted = ''
         self.text_active = False
-        self._processor = TextBoxProcessor(limit)
+        self.processor = TextBoxProcessor(limit)
         self.enabled = True
 
     def draw_textbox(self, surface: pygame.Surface):
@@ -167,7 +167,7 @@ class TextBox:
             if event.type == pygame.KEYDOWN and self.text_active:
                 if event.key == pygame.K_RETURN:
                     self.text_active = False
-                    process = self._processor.process_final_answer(self.text_inputted)
+                    process = self.processor.process_final_answer(self.text_inputted)
                     if process is not None:
                         self.enabled = False
                     self.clear_textbox()
@@ -220,7 +220,7 @@ def proceed_to_menu(main_screen: Screen, current_screen: ScreenOrganizer) -> Non
     current_screen.switch_screens(main_screen)
 
 
-def store_all_answers(textbox1: TextBox, textbox2: TextBox, textbox3: TextBox, textbox4: TextBox) -> list | None:
+def store_all_answers(textbox1: TextBox, textbox2: TextBox, textbox3: TextBox, textbox4: TextBox) -> None:
     """Takes all the values stored in each textbox and delivers it.
         Preconditions:
         - textbox1 is the dietary restrictions textbox
@@ -228,15 +228,10 @@ def store_all_answers(textbox1: TextBox, textbox2: TextBox, textbox3: TextBox, t
         - textbox3 is the allergies textbox
         - textbox4 is the recommendation textbox
      """
-    count = 0
-    list_of_inputs = [textbox1.text_inputted, textbox2.text_inputted, textbox3.text_inputted, textbox4.text_inputted]
-    for val in list_of_inputs:
-        if val.strip().lower() == '':
-            count += 1
-    if count == 4:
-        return None
-    else:
-        return list_of_inputs
+    list_of_inputs = [textbox1.processor.all_text_inputted, textbox2.processor.all_text_inputted, textbox3.processor,
+                      textbox4.processor.all_text_inputted]
+    # Call processor method here
+
 
 
 

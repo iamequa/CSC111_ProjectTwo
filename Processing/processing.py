@@ -83,7 +83,6 @@ class AlgorithmProcessor:
             self.algorithm_screen.text.append(text_obj)
             y += 35
 
-
     def _display_error(self, error: str) -> None:
         if self.algorithm_screen.text is None:
             self.algorithm_screen.text = []

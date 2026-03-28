@@ -2,7 +2,7 @@ from __future__ import annotations
 import pygame
 from typing import Callable, Optional
 
-
+FONT_PATH = "GUI/design_features/font/ShadowsIntoLightTwo-Regular.ttf"
 class Button:
     """Represents the buttons in Python.
 
@@ -22,7 +22,7 @@ class Button:
     def __init__(self, rect: pygame.Rect, text: str, color: tuple[int, int, int],
                  action: Callable[..., None] | None, top_left_coordinates: tuple[int, int]):
         self.rect = rect
-        self.font = pygame.font.Font("GUI/design_features/font/ShadowsIntoLightTwo-Regular.ttf", 30)
+        self.font = pygame.font.Font(FONT_PATH, 30)
         self.text = text
         self.color = color
         self.action = action
@@ -154,10 +154,11 @@ class TextBox:
         self.top_left_coordinates = top_left_coordinates
         self.rect.topleft = top_left_coordinates
         self.color = BLACK
-        self.font = pygame.font.Font("design_features/font/ShadowsIntoLightTwo-Regular.ttf", 30)
+        self.font = pygame.font.Font(FONT_PATH, 30)
         self.text_inputted = ''
         self.text_active = False
         self.enabled = True
+        self.limit = limit
 
     def draw_textbox(self, surface: pygame.Surface):
         """ Draws a textbox for user"""
@@ -202,6 +203,17 @@ class TextBox:
         self.clear_textbox()
         self.enabled = True
 
+    def process_final_answer(self, text_inputted: str):
+        """Updates final answer """
+        if len(self.all_text_inputted) < self.limit:
+            print('if reached')
+            self.all_text_inputted.append(text_inputted)
+            if len(self.all_text_inputted) == self.limit:
+                return 'Limit Reached'
+        return None
+
+    def refresh_answers(self):
+        self.all_text_inputted = []
 
 class Text:
     """This class represents text on the screen"""
@@ -213,7 +225,7 @@ class Text:
 
     def __init__(self, text: str, rect: pygame.rect.Rect, coordinates: tuple[int, int], size: int):
         self.rect = rect
-        self._font = pygame.font.Font("design_features/font/ShadowsIntoLightTwo-Regular.ttf", size)
+        self._font = pygame.font.Font("GUI/design_features/font/ShadowsIntoLightTwo-Regular.ttf", size)
         self.text = text
         self.rect.topleft = coordinates
 
@@ -227,18 +239,3 @@ class Text:
     def remove_text(self):
         """Removes text off-screen."""
         self.text = ''
-
-
-def proceed_to_graph(search_screen: Screen, current_screen: ScreenOrganizer) -> None:
-    """Switches from current screen to search screen. """
-    current_screen.switch_screens(search_screen)
-
-
-def proceed_to_algorithm(algorithm_screen: Screen, current_screen: ScreenOrganizer) -> None:
-    """Switches from current screen to algorithm screen."""
-    current_screen.switch_screens(algorithm_screen)
-
-
-def proceed_to_menu(main_screen: Screen, current_screen: ScreenOrganizer) -> None:
-    """Switches the screen back to the main screen"""
-    current_screen.switch_screens(main_screen)

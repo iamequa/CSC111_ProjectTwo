@@ -24,6 +24,8 @@ class TextBoxProcessor:
             if len(self.all_text_inputted) == self.limit:
                 return 'Limit Reached'
         return None
+    def refresh_answers(self):
+        self.all_text_inputted = []
 
     def send_to_computation(self, inputs: list[list[str]]):
         """Send to the correct computation

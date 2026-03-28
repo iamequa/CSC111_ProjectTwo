@@ -24,7 +24,7 @@ class Button:
     def __init__(self, rect: pygame.Rect, text: str, color: tuple[int, int, int],
                  action: Callable[..., None], top_left_coordinates: tuple[int, int]):
         self.rect = rect
-        self.font = pygame.font.SysFont("candara", 30)
+        self.font = pygame.font.Font("design_features/font/ShadowsIntoLightTwo-Regular.ttf", 30)
         self.text = text
         self.color = color
         self.action = action
@@ -83,6 +83,10 @@ class Screen:  # pls add all the private attributes later as a reminder to mysel
         self.image = pygame.transform.scale(self.image, (self.WIDTH, self.HEIGHT))
         self.textboxes = textboxes
         self.text = text
+        if self.text is not None:
+            self._default_text = len(self.text)
+        else:
+            self._default_text = 0
 
     def update_all_buttons(self, event: pygame.event.Event) -> None:
         """Checks if all buttons are clicked in self."""
@@ -110,6 +114,16 @@ class Screen:  # pls add all the private attributes later as a reminder to mysel
             for text in self.text:
                 text.draw_text(self.screen)
         pygame.display.flip()
+
+    def refresh_screen(self):
+        """Completely resets screen to default."""
+        for textbox in self.textboxes:
+            textbox.refresh_textbox()
+        if self.text is not None:
+            print(self._default_text)
+            for _ in range(len(self.text) - self._default_text):
+                text = self.text.pop()
+                text.remove_text()
 
 
 class ScreenOrganizer:
@@ -140,7 +154,7 @@ class TextBox:
         self.top_left_coordinates = top_left_coordinates
         self.rect.topleft = top_left_coordinates
         self.color = BLACK
-        self.font = pygame.font.SysFont("candara", 30)
+        self.font = pygame.font.Font("design_features/font/ShadowsIntoLightTwo-Regular.ttf", 30)
         self.text_inputted = ''
         self.text_active = False
         self.processor = TextBoxProcessor(limit)
@@ -183,17 +197,24 @@ class TextBox:
         """Clears the textbox"""
         self.text_inputted = ''
 
+    def refresh_textbox(self) -> None:
+        """Refreshes and re-enables textbox."""
+        self.processor.refresh_answers()
+        self.clear_textbox()
+        self.enabled = True
+
 
 class Text:
     """This class represents text on the screen"""
     text: str
     rect: pygame.rect.Rect
-    coordinates: tuple[int,int]
+    coordinates: tuple[int, int]
+    size: int
     _font: pygame.font.Font
 
-    def __init__(self, text: str, rect: pygame.rect.Rect, coordinates: tuple[int,int]):
+    def __init__(self, text: str, rect: pygame.rect.Rect, coordinates: tuple[int, int], size: int):
         self.rect = rect
-        self._font = pygame.font.SysFont("candara", 30)
+        self._font = pygame.font.Font("design_features/font/ShadowsIntoLightTwo-Regular.ttf", size)
         self.text = text
         self.rect.topleft = coordinates
 
@@ -201,8 +222,12 @@ class Text:
         """Draws the text onto the screen"""
         BLACK = (0, 0, 0)
         text_surf = self._font.render(self.text, True, BLACK)
-        text_rect = text_surf.get_rect(center=self.rect.center)
+        text_rect = text_surf.get_rect(topleft=self.rect.topleft)
         surface.blit(text_surf, text_rect)
+
+    def remove_text(self):
+        """Removes text off-screen."""
+        self.text = ''
 
 
 def proceed_to_graph(search_screen: Screen, current_screen: ScreenOrganizer) -> None:
@@ -220,18 +245,20 @@ def proceed_to_menu(main_screen: Screen, current_screen: ScreenOrganizer) -> Non
     current_screen.switch_screens(main_screen)
 
 
-def store_all_answers(textbox1: TextBox, textbox2: TextBox, textbox3: TextBox, textbox4: TextBox) -> None:
-    """Takes all the values stored in each textbox and delivers it.
+def store_all_answers(textbox1: TextBox, textbox2: TextBox, textbox3: TextBox, textbox4: TextBox,
+                      screen: Screen) -> None:
+    """Takes all the values stored in each textbox and delivers it, removes any text off-screen.
+    Then refreshes all the textboxes.
         Preconditions:
         - textbox1 is the dietary restrictions textbox
         - textbox2 is the ingredients to use textbox
         - textbox3 is the allergies textbox
         - textbox4 is the recommendation textbox
+        - all textboxes in screen.textboxes
      """
-    list_of_inputs = [textbox1.processor.all_text_inputted, textbox2.processor.all_text_inputted, textbox3.processor,
+    list_of_inputs = [textbox1.processor.all_text_inputted, textbox2.processor.all_text_inputted,
+                      textbox3.processor.all_text_inputted,
                       textbox4.processor.all_text_inputted]
+    print(list_of_inputs)
+    screen.refresh_screen()
     # Call processor method here
-
-
-
-

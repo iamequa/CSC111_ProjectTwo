@@ -4,7 +4,7 @@ import screen_displays
 
 pygame.init()
 pygame.display.set_caption('The Ultimate Recipe Index >:)')
-# INITILIAZERS (Filepath) AND CONSTANTS
+# -------------------------- INITILIAZERS (Filepath) AND CONSTANTS --------------------------------------------------
 screen = pygame.display.set_mode((1000, 1000))
 main_menu_image_file_path = "design_features/backgrounds/title.png"
 algorithm_image_file_path = "design_features/backgrounds/background.png"

@@ -1,6 +1,7 @@
 import pygame
 import sys
 import screen_displays
+import assignments.CSC111_ProjectTwo.Processing.processing as processing
 
 pygame.init()
 pygame.display.set_caption('The Ultimate Recipe Index >:)')
@@ -20,34 +21,35 @@ CREDITS = 'By Arwa, Ema, Mostafa, and Noon!!'
 # MAIN MENU BUTTONS
 MM1_rect = pygame.Rect(500, 500, 200, 60)
 MM1_button = screen_displays.Button(MM1_rect, "Survey", BUTTON_COLOR,
-                                    lambda: screen_displays.proceed_to_algorithm(algorithm_screen, current_screen),
+                                    None,
                                     (400, 640))
 MM2_rect = pygame.Rect(500, 600, 200, 60)
 MM2_button = screen_displays.Button(MM2_rect, "Search", BUTTON_COLOR,
-                                    lambda: screen_displays.proceed_to_graph(search_image_screen,
-                                                                             current_screen), (400, 740))
+                                    None, (400, 740))
 
 # ALGORITHM SCREEN BUTTONS
 AS1_rect = pygame.Rect(50, 50, 200, 60)
 AS1_button = screen_displays.Button(AS1_rect, "Return to Menu", BUTTON_COLOR,
-                                    lambda: screen_displays.proceed_to_menu(main_menu_screen, current_screen),
+                                    None,
                                     (0, 0))
 AS2_rect = pygame.Rect(100, 100, 200, 60)
 AS2_button = screen_displays.Button(AS2_rect, "Submit", SUBMIT_COLOR,
-                                    lambda: screen_displays.store_all_answers(textbox_q1, textbox_q2,
-                                                                              textbox_q3, textbox_q4,
-                                                                              current_screen.curr_screen),
+                                    None,
                                     (700, 700))
 
 # SEARCH IMAGE SCREEN BUTTONS
 SI1_rect = pygame.Rect(50, 50, 200, 60)
 SI1_button = screen_displays.Button(SI1_rect, "Return to Menu", BUTTON_COLOR,
-                                    lambda: screen_displays.proceed_to_menu(main_menu_screen, current_screen),
+                                    None,
                                     (0, 0))
+SI2_rect = pygame.Rect(100, 100, 200, 60)
+SI2_button = screen_displays.Button(AS2_rect, "Submit", SUBMIT_COLOR,
+                                    None,
+                                    (700, 700))
 # ALL SCREEN BUTTONS
 main_menu_screen_buttons = [MM1_button, MM2_button]
 algorithm_screen_buttons = [AS1_button, AS2_button]
-search_image_screen_buttons = [SI1_button]
+search_image_screen_buttons = [SI1_button, SI2_button]
 
 # ------------------------------------------- ALL TEXT (SORTED BY SCREEN) ---------------------------------------------
 # MAIN MENU TEXT
@@ -92,9 +94,25 @@ algorithm_screen_textboxes = [textbox_q1, textbox_q2, textbox_q3, textbox_q4]
 main_menu_screen = screen_displays.Screen(main_menu_screen_buttons, main_menu_image_file_path, screen,
                                           text=main_menu_screen_text)
 algorithm_screen = screen_displays.Screen(algorithm_screen_buttons, algorithm_image_file_path, screen,
-                                          algorithm_screen_textboxes, algorithm_screen_text)
-search_image_screen = screen_displays.Screen(search_image_screen_buttons, search_image_file_path, screen)
+                                       algorithm_screen_textboxes, algorithm_screen_text)
+search_screen = screen_displays.Screen(search_image_screen_buttons, search_image_file_path, screen)
 current_screen = screen_displays.ScreenOrganizer(main_menu_screen)
+current_screen.curr_screen = main_menu_screen
+
+# -------------------------------------- PROCESSORS -----------------------------------------------------------
+main_menu_processor = processing.MainMenuProcessor(current_screen, algorithm_screen,
+                                                   search_screen, main_menu_screen)
+MM1_button.action = lambda: main_menu_processor.go_to_survey()
+MM2_button.action = lambda: main_menu_processor.go_to_search()
+
+
+algorithm_screen_processor = processing.AlgorithmProcessor(current_screen, algorithm_screen, main_menu_screen, None)
+AS1_button.action = lambda: algorithm_screen_processor.go_to_main_menu()
+AS2_button.action = lambda: algorithm_screen_processor.give_recommendation()
+
+search_screen_processor = processing.SearchProcessor(current_screen, search_screen, main_menu_screen, None)
+SI1_button.action = lambda: search_screen_processor.go_to_main_menu()
+SI2_button.action = lambda: search_screen_processor.search()
 
 
 running = True

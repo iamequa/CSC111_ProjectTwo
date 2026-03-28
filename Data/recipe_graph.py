@@ -89,14 +89,17 @@ class RecipeGraph:
         - vertices: a mapping of recipe UIDs or ingredient/category names to their respective vertices
     """
     vertices: dict[int | str, v.Vertex]
+    recipe_name_to_id: dict[str, int]
 
     def __init__(self):
         self.vertices = {}
+        self.recipe_name_to_id = {}
 
     def add_vertex(self, vertex: v.Vertex) -> None:
         """Adds the given vertex to the graph if it is not already contained."""
         if isinstance(vertex, v.Recipe) and vertex.get_id() not in self.vertices:
             self.vertices[vertex.get_id()] = vertex
+            self.recipe_name_to_id[vertex.get_name()] = vertex.get_id()
         elif isinstance(vertex, v.Attribute) and vertex.get_name() not in self.vertices:
             self.vertices[vertex.get_name()] = vertex
 

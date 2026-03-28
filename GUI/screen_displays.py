@@ -2,8 +2,6 @@ from __future__ import annotations
 import pygame
 from typing import Callable, Optional
 
-from Processing.processing import TextBoxProcessor
-
 
 class Button:
     """Represents the buttons in Python.
@@ -22,7 +20,7 @@ class Button:
     top_left_coordinates: tuple[int, int]
 
     def __init__(self, rect: pygame.Rect, text: str, color: tuple[int, int, int],
-                 action: Callable[..., None], top_left_coordinates: tuple[int, int]):
+                 action: Callable[..., None] | None, top_left_coordinates: tuple[int, int]):
         self.rect = rect
         self.font = pygame.font.Font("design_features/font/ShadowsIntoLightTwo-Regular.ttf", 30)
         self.text = text
@@ -125,6 +123,9 @@ class Screen:  # pls add all the private attributes later as a reminder to mysel
                 text = self.text.pop()
                 text.remove_text()
 
+    def get_textbox_inputs(self) -> list[str]:
+        return [textbox.text_inputted for textbox in self.textboxes]
+
 
 class ScreenOrganizer:
     """Manages the current Screen on pygame and updates according to button"""
@@ -145,7 +146,6 @@ class TextBox:
     color: tuple[int, int, int]
     top_left_coordinates: tuple[int, int]
     _font: pygame.font.Font
-    processor: TextBoxProcessor
     limit: int
 
     def __init__(self, rect: pygame.Rect, top_left_coordinates: tuple[int, int], limit: int):
@@ -157,7 +157,6 @@ class TextBox:
         self.font = pygame.font.Font("design_features/font/ShadowsIntoLightTwo-Regular.ttf", 30)
         self.text_inputted = ''
         self.text_active = False
-        self.processor = TextBoxProcessor(limit)
         self.enabled = True
 
     def draw_textbox(self, surface: pygame.Surface):
@@ -243,22 +242,3 @@ def proceed_to_algorithm(algorithm_screen: Screen, current_screen: ScreenOrganiz
 def proceed_to_menu(main_screen: Screen, current_screen: ScreenOrganizer) -> None:
     """Switches the screen back to the main screen"""
     current_screen.switch_screens(main_screen)
-
-
-def store_all_answers(textbox1: TextBox, textbox2: TextBox, textbox3: TextBox, textbox4: TextBox,
-                      screen: Screen) -> None:
-    """Takes all the values stored in each textbox and delivers it, removes any text off-screen.
-    Then refreshes all the textboxes.
-        Preconditions:
-        - textbox1 is the dietary restrictions textbox
-        - textbox2 is the ingredients to use textbox
-        - textbox3 is the allergies textbox
-        - textbox4 is the recommendation textbox
-        - all textboxes in screen.textboxes
-     """
-    list_of_inputs = [textbox1.processor.all_text_inputted, textbox2.processor.all_text_inputted,
-                      textbox3.processor.all_text_inputted,
-                      textbox4.processor.all_text_inputted]
-    print(list_of_inputs)
-    screen.refresh_screen()
-    # Call processor method here

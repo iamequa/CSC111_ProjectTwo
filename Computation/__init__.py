@@ -4,6 +4,7 @@ from Data.recipe_tree import RecipeTree
 from Data.vertex import Recipe
 from Data.recipe_tree import NAME_TOKENS
 
+#implemented in recipe tree instead
 class RecommendationFinder:
     """ A tree based entity that recommends a recipe based on user's preferences.
      Instance Attributes:
@@ -26,6 +27,8 @@ class RecommendationFinder:
 
         The method returns the 3 recipes with the highest total scores."""
 
+
+#implemented in recipe graph instead
 class AlternativeComputer:
     """A graph based entity that provides an alternative recipe based on a given recipe.
 

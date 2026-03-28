@@ -1,4 +1,4 @@
-from assignments.CSC111_ProjectTwo.Processing.app import App
+from Processing.app import App
 
 
 def run() -> None:

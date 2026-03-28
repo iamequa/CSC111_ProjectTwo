@@ -11,10 +11,10 @@ from Data.recipe_graph import BASE_INDEX, CATEGORIES_INDEX, INGREDIENTS_INDEX, N
     UID_INDEX
 from Data.recipe_tree import NAME_TOKENS, RecipeTree
 
-RECIPES_CSV_PATH = "Data/Datasets/recipes.parquet"
-IS_RECIPE_CSV = False
-PAIRS_CSV_PATH = "Data/Datasets/pairs.parquet"
-IS_PAIRS_CSV = False
+RECIPES_CSV_PATH = "Data/Datasets/recipes.csv"
+IS_RECIPE_CSV = True
+PAIRS_CSV_PATH = "Data/Datasets/pairs.csv"
+IS_PAIRS_CSV = True
 
 BUTTON_COLOR = (148, 124, 92)
 SUBMIT_COLOR = (138, 154, 91)
@@ -182,9 +182,9 @@ class App:
         text_format3 = pygame.Rect(500, 500, 450, 60)
         text_format4 = pygame.Rect(500, 500, 450, 60)
 
-        question1 = '1. List Dietary Restrictions (Max 5). Enter 1 ingredient at a time.'
+        question1 = '1. List Dietary Restrictions (Max 5). Enter 1 category at a time.'
         question2 = '2. List ingredients you want to use (Max 5). Enter 1 ingredient at a time.'
-        question3 = '3. List any allergies (Max 5). Enter 1 allergy at a time.'
+        question3 = '3. List any allergies (Max 5). Enter 1 ingredient to at a time.'
         question4 = '(Optional) List one type of recipe you want to make.'
 
         text1 = screen_displays.Text(question1, text_format1, (50, 100), FONT_SIZE)

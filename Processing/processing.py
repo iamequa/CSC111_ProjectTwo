@@ -6,6 +6,7 @@ from Data.recipe_graph import RecipeGraph
 from Data.file_reader import process_varchar_list
 from Data.vertex import Recipe
 
+
 class MainMenuProcessor:
     """Handles logic for the main menu screen."""
     organizer: gui.ScreenOrganizer
@@ -15,7 +16,6 @@ class MainMenuProcessor:
 
     def __init__(self, organizer: gui.ScreenOrganizer, search_screen: gui.Screen, algorithm_screen: gui.Screen,
                  main_screen: gui.Screen) -> None:
-
         self.organizer = organizer
         self.search_screen = search_screen
         self.algorithm_screen = algorithm_screen
@@ -40,7 +40,7 @@ class AlgorithmProcessor:
     data: RecipeGraph
 
     def __init__(self, organizer: gui.ScreenOrganizer, algorithm_screen: gui.Screen, main_screen: gui.Screen,
-                data: RecipeGraph) -> None:
+                 data: RecipeGraph) -> None:
 
         self.organizer = organizer
         self.algorithm_screen = algorithm_screen
@@ -94,6 +94,7 @@ class AlgorithmProcessor:
             25
         )
         self.algorithm_screen.text.append(error_text)
+
 
 class SearchProcessor:
     organizer: gui.ScreenOrganizer

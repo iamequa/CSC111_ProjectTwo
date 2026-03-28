@@ -1,4 +1,3 @@
-
 class TextBoxProcessor:
     """This class processes what the user inputs and sends it to correct computation.
         Instance Attributes:
@@ -8,6 +7,7 @@ class TextBoxProcessor:
     """
     all_text_inputted: list[str]
     limit: int
+
     # add recipe tree
 
     def __init__(self, limit: int):
@@ -24,6 +24,7 @@ class TextBoxProcessor:
             if len(self.all_text_inputted) == self.limit:
                 return 'Limit Reached'
         return None
+
     def refresh_answers(self):
         self.all_text_inputted = []
 
@@ -35,11 +36,7 @@ class TextBoxProcessor:
             """
         q1, q2, q3, q4 = inputs[0], inputs[1], inputs[2], inputs[3]
         if q4[0].strip() == '':
-            ... # implement recipe graph
+            ...  # implement recipe graph
         else:
 
-            ... # implement tree graoh
-
-
-
-
+            ...  # implement tree graoh

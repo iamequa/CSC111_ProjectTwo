@@ -6,62 +6,72 @@ from Processing.processing import TextBoxProcessor
 
 
 class Button:
-    """Represents the buttons in Python.
+    """Represents the buttons in GUI.
 
     Instance Attributes:
         - rect: size of the button
-        - font: the font used for the button
+        - text: the text displayed on button
         - color: the color of a button using the RGB color scheme
         - action: the action button needs to perform
-        - clicked: determines if person clicked button or not
+        - top_left_coordinates: the top left coordinates of the button
+    Private Instance Attributes:
+        - _font: the font used for the button
+        - _FONT_COLOR: color of the font
+        - _FONT_SIZE
     """
     rect: pygame.Rect
     text: str
     color: tuple[int, int, int]
     action: Callable[..., None]
     top_left_coordinates: tuple[int, int]
+    _FONT_COLOR: tuple[int, int, int]
+    _FONT_SIZE: int
 
     def __init__(self, rect: pygame.Rect, text: str, color: tuple[int, int, int],
                  action: Callable[..., None], top_left_coordinates: tuple[int, int]):
         self.rect = rect
-        self.font = pygame.font.Font("design_features/font/ShadowsIntoLightTwo-Regular.ttf", 30)
+        self._FONT_SIZE = 30
+        self._FONT_COLOR = (0, 0, 0)
+        self._font = pygame.font.Font("design_features/font/ShadowsIntoLightTwo-Regular.ttf", self._FONT_SIZE)
         self.text = text
         self.color = color
         self.action = action
         self.top_left_coordinates = top_left_coordinates
 
     def draw_button(self, surface: pygame.Surface) -> None:
-        """Draws the given button on given surface.
-        """
-        BLACK = (0, 0, 0)
+        """Draws Button on given surface."""
+
         self.rect.topleft = self.top_left_coordinates
         pygame.draw.rect(surface, self.color, self.rect, border_radius=13)
-        text_surf = self.font.render(self.text, True, BLACK)
+        text_surf = self._font.render(self.text, True, self._FONT_COLOR)
         text_rect = text_surf.get_rect(center=self.rect.center)
         surface.blit(text_surf, text_rect)
 
     def perform_event(self) -> None:
-        """Checks over if event was a click, if click collided with button surface area then perform action
-        """
+        """Calls on the buttons action to perform its duty."""
         self.action()
 
     def is_clicked(self, event: pygame.event.Event) -> bool:
-        """ Returns whether the given event is the user clicking the button.
-        """
+        """ Returns whether the given event is the user clicking the button."""
         if event.type == pygame.MOUSEBUTTONDOWN:
             if self.rect.collidepoint(event.pos):
                 return True
         return False
 
 
-class Screen:  # pls add all the private attributes later as a reminder to myself
-    """A class that represents a singular screen in Python
+class Screen:
+    """A class that represents a singular screen in pygame
 
     Instance Attributes:
-    - screen: this is the actual surface of the pygame window
-    - buttons: a list of Buttons that are present on the screen
-    - WIDTH: width of the screen
-    - HEIGHT: height of the screen
+        - screen: the surface the Screen draws on
+        - WIDTH: width of the Screen
+        - HEIGHT: height of the Screen
+        - buttons: list of all Buttons displayed on Screen
+        - textboxes: list of all Textboxes displayed on Screen (optional)
+        - text: list of all Text displayed on Screen (optional)
+    Private Instance Attributes:
+        - _image: the image displayed on Screen
+        - _default_text: the initial number of Text objects on screen
     """
 
     screen: pygame.Surface
@@ -71,6 +81,8 @@ class Screen:  # pls add all the private attributes later as a reminder to mysel
     image_filepath: str
     textboxes: Optional[list[TextBox]] = None
     text: Optional[list[Text]] = None
+    _image: pygame.Surface
+    _default_text: int
 
     def __init__(self, buttons: list[Button], image_filepath: str, screen: pygame.Surface,
                  textboxes: Optional[list[TextBox]] = None, text: Optional[list[Text]] = None):
@@ -79,8 +91,8 @@ class Screen:  # pls add all the private attributes later as a reminder to mysel
         self.HEIGHT = 1000
         self.buttons = buttons
         self.image_filepath = image_filepath
-        self.image = pygame.image.load(self.image_filepath)
-        self.image = pygame.transform.scale(self.image, (self.WIDTH, self.HEIGHT))
+        self._image = pygame.image.load(self.image_filepath)
+        self._image = pygame.transform.scale(self._image, (self.WIDTH, self.HEIGHT))
         self.textboxes = textboxes
         self.text = text
         if self.text is not None:
@@ -89,22 +101,20 @@ class Screen:  # pls add all the private attributes later as a reminder to mysel
             self._default_text = 0
 
     def update_all_buttons(self, event: pygame.event.Event) -> None:
-        """Checks if all buttons are clicked in self."""
+        """Checks if any buttons in self were clicked in given event and updates them if clicked."""
         for button in self.buttons:
             if button.is_clicked(event):
                 button.perform_event()
 
-    def update_all_textboxes(self, event: pygame.event.Event):
-        """Updates every textbox with a working textbook
-        """
+    def update_all_textboxes(self, event: pygame.event.Event) -> None:
+        """Updates every textbox with given event."""
         if self.textboxes is not None:
             for textbox in self.textboxes:
                 textbox.handle_textbox_input(event)
 
     def draw_screen(self) -> None:
-        """Draws the screen in pygame with buttons.
-        """
-        self.screen.blit(self.image, (0, 0))
+        """Draws the screen in pygame with all features (Text, Textbox, Button if any are present)."""
+        self.screen.blit(self._image, (0, 0))
         for button in self.buttons:
             button.draw_button(self.screen)
         if self.textboxes is not None:
@@ -115,8 +125,8 @@ class Screen:  # pls add all the private attributes later as a reminder to mysel
                 text.draw_text(self.screen)
         pygame.display.flip()
 
-    def refresh_screen(self):
-        """Completely resets screen to default."""
+    def refresh_screen(self) -> None:
+        """Completely resets screen to initial state. If any text was added to screen, it removes it."""
         for textbox in self.textboxes:
             textbox.refresh_textbox()
         if self.text is not None:
@@ -127,7 +137,10 @@ class Screen:  # pls add all the private attributes later as a reminder to mysel
 
 
 class ScreenOrganizer:
-    """Manages the current Screen on pygame and updates according to button"""
+    """Manages the current Screen on pygame.
+    Instance Attributes:
+        - curr_screen: The current screen drawn on pygame.
+    """
     curr_screen: Screen
 
     def __init__(self, screen: Screen):
@@ -139,51 +152,73 @@ class ScreenOrganizer:
 
 
 class TextBox:
-    """A class that represents the textbox values a user inputs."""
+    """A class that represents textboxes on pygame.
+    Instance Attributes:
+        - rect: the area the of the textbox
+        - text_inputted: the text entered by user
+        - top_left_coordinates: the top left coordinates of TextBox
+        - processor: a TextBoxProcessor that processes the user's entry and stores it
+        - limit: maximum number of entries for TextBox
+    Private Instance Attributes:
+        - _enabled: bool representing if TextBox is enabled or not
+        - _text_active: bool representing if TextBox is active or not
+        - _FONT_COLOR: constant representing color of the font
+        - _FONT_SIZE: constant representing the size of the font
+        - _FONT: the font of the text in Textbox
+        - _TEXTBOX_COLOR: constant representing color of TextBox
+        - _TEXTBOX_WIDTH: constant representing the width of TextBox
+
+    """
     rect: pygame.Rect
     text_inputted: str
-    color: tuple[int, int, int]
     top_left_coordinates: tuple[int, int]
-    _font: pygame.font.Font
     processor: TextBoxProcessor
     limit: int
+    _enabled: bool
+    _text_active: bool
+    _FONT_COLOR: tuple[int, int, int]
+    _FONT_SIZE: int
+    _FONT: pygame.font.Font
+    _TEXTBOX_COLOR: tuple[int, int, int]
+    _TEXTBOX_WIDTH: int
 
     def __init__(self, rect: pygame.Rect, top_left_coordinates: tuple[int, int], limit: int):
-        BLACK = (0, 0, 0)
         self.rect = rect
         self.top_left_coordinates = top_left_coordinates
         self.rect.topleft = top_left_coordinates
-        self.color = BLACK
-        self.font = pygame.font.Font("design_features/font/ShadowsIntoLightTwo-Regular.ttf", 30)
+        self._FONT_SIZE = 30
+        self._FONT_COLOR = (0, 0, 0)
+        self._TEXTBOX_COLOR = (245, 245, 220)
+        self._TEXTBOX_WIDTH = 60
+        self._FONT = pygame.font.Font("design_features/font/ShadowsIntoLightTwo-Regular.ttf", self._FONT_SIZE)
         self.text_inputted = ''
-        self.text_active = False
+        self._text_active = False
         self.processor = TextBoxProcessor(limit)
-        self.enabled = True
+        self._enabled = True
 
-    def draw_textbox(self, surface: pygame.Surface):
-        """ Draws a textbox for user"""
-        BLACK = (0, 0, 0)
-        BEIGE = (245, 245, 220)
-        text_surf = self.font.render(self.text_inputted, True, BLACK)
+    def draw_textbox(self, surface: pygame.Surface) -> None:
+        """Draws textbox on given surface."""
+        text_surf = self._FONT.render(self.text_inputted, True, self._FONT_COLOR)
         text_rect = text_surf.get_rect(center=self.rect.center)
-        pygame.draw.rect(surface, BEIGE, self.rect, 60)
+        pygame.draw.rect(surface, self._TEXTBOX_COLOR, self.rect, self._TEXTBOX_WIDTH)
         surface.blit(text_surf, text_rect)
 
     def handle_textbox_input(self, event: pygame.event.Event) -> None:
-        """Takes care of the textbox stuff"""
+        """Updates TextBox if enabled and handles given event. Updates textbox if valid entry and does not exceed max
+        length, otherwise does nothing."""
         MAX_LENGTH = 40
-        if self.enabled:
+        if self._enabled:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if self.rect.collidepoint(event.pos):
-                    self.text_active = True
+                    self._text_active = True
                 else:
-                    self.text_active = False
-            if event.type == pygame.KEYDOWN and self.text_active:
+                    self._text_active = False
+            if event.type == pygame.KEYDOWN and self._text_active:
                 if event.key == pygame.K_RETURN:
-                    self.text_active = False
+                    self._text_active = False
                     process = self.processor.process_final_answer(self.text_inputted)
                     if process is not None:
-                        self.enabled = False
+                        self._enabled = False
                     self.clear_textbox()
                 elif event.key == pygame.K_SPACE and len(self.text_inputted) < MAX_LENGTH:
                     self.text_inputted += ' '
@@ -194,38 +229,46 @@ class TextBox:
                         self.text_inputted += event.unicode
 
     def clear_textbox(self) -> None:
-        """Clears the textbox"""
+        """Clears the textbox entry"""
         self.text_inputted = ''
 
     def refresh_textbox(self) -> None:
         """Refreshes and re-enables textbox."""
         self.processor.refresh_answers()
         self.clear_textbox()
-        self.enabled = True
+        self._enabled = True
 
 
 class Text:
-    """This class represents text on the screen"""
+    """This class represents text in pygame
+    Instance Attributes:
+        - text: the text to display
+        - rect: the area of where text is displayed
+        - top_left_coordinates: the top left coordinates of Text
+        - size: the font size of the text
+    Private Instance Attributes:
+        - _FONT: the font of the text
+    """
     text: str
     rect: pygame.rect.Rect
-    coordinates: tuple[int, int]
+    top_left_coordinates: tuple[int, int]
     size: int
-    _font: pygame.font.Font
+    _FONT: pygame.font.Font
 
-    def __init__(self, text: str, rect: pygame.rect.Rect, coordinates: tuple[int, int], size: int):
+    def __init__(self, text: str, rect: pygame.rect.Rect, top_left_coordinates: tuple[int, int], size: int):
         self.rect = rect
-        self._font = pygame.font.Font("design_features/font/ShadowsIntoLightTwo-Regular.ttf", size)
+        self._FONT = pygame.font.Font("design_features/font/ShadowsIntoLightTwo-Regular.ttf", size)
         self.text = text
-        self.rect.topleft = coordinates
+        self.rect.topleft = top_left_coordinates
 
-    def draw_text(self, surface: pygame.Surface):
-        """Draws the text onto the screen"""
+    def draw_text(self, surface: pygame.Surface) -> None:
+        """Draws Text onto given surface"""
         BLACK = (0, 0, 0)
-        text_surf = self._font.render(self.text, True, BLACK)
+        text_surf = self._FONT.render(self.text, True, BLACK)
         text_rect = text_surf.get_rect(topleft=self.rect.topleft)
         surface.blit(text_surf, text_rect)
 
-    def remove_text(self):
+    def remove_text(self) -> None:
         """Removes text off-screen."""
         self.text = ''
 

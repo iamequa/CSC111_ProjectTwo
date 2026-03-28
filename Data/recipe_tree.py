@@ -266,9 +266,9 @@ class RecipeTree:
         # Use tree to get candidates — traverse ingredient subtrees skipping allergens
         candidates = set()
         for tok_name, tok_subtree in self.filters.items():
-            for ing_name, ing_subtree in tok_subtree.filters.items():
-                if ing_name.lower() not in allergies_lower:
-                    candidates.update(ing_subtree.recipes.values())
+            for ingredient_name, ingredient_subtree in tok_subtree.filters.items():
+                if ingredient_name.lower() not in allergies_lower:
+                    candidates.update(ingredient_subtree.recipes.values())
 
         # Secondary allergy check on the recipe itself (a recipe could still
         # contain an allergen ingredient via a different subtree path)

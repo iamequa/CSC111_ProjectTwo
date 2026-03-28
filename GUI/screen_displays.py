@@ -2,7 +2,7 @@ from __future__ import annotations
 import pygame
 from typing import Callable, Optional
 
-from Processing.processing import TextBoxProcessor
+from assignments.CSC111_ProjectTwo.Processing.processing import SurveyProcessor
 
 
 class Button:
@@ -131,7 +131,7 @@ class TextBox:
     color: tuple[int, int, int]
     top_left_coordinates: tuple[int, int]
     _font: pygame.font.Font
-    _processor: TextBoxProcessor
+    _processor: SurveyProcessor
     limit: int
 
     def __init__(self, rect: pygame.Rect, top_left_coordinates: tuple[int, int], limit: int):
@@ -143,7 +143,7 @@ class TextBox:
         self.font = pygame.font.SysFont("candara", 30)
         self.text_inputted = ''
         self.text_active = False
-        self._processor = TextBoxProcessor(limit)
+        self._processor = SurveyProcessor(limit)
         self.enabled = True
 
     def draw_textbox(self, surface: pygame.Surface):

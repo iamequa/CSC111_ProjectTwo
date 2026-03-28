@@ -246,7 +246,7 @@ class RecipeGraph:
 
 
     #to be implemented gang
-    def find_recommendations(self, ingredients: list[str], categories: list[str],
+    def find_recommendations(self, categories: list[str], ingredients: list[str],
                              allergies: list[str]) -> list[v.Recipe]:
         """Return a list of the top 3 recipes that best match the given user preferences.
 

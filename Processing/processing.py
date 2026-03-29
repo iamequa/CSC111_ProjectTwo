@@ -6,6 +6,10 @@ from Data.recipe_graph import RecipeGraph
 from Data.vertex import Recipe
 
 
+def list_to_str(lst: list[str]) -> str:
+    return ", ".join(lst)
+
+
 class MainMenuProcessor:
     """Handles logic for the main menu screen."""
     organizer: gui.ScreenOrganizer
@@ -37,6 +41,8 @@ class AlgorithmProcessor:
     algorithm_screen: gui.Screen
     main_screen: gui.Screen
     data: RecipeGraph
+    current_recipes: list[Recipe]
+    current_index: int
 
     def __init__(self, organizer: gui.ScreenOrganizer, algorithm_screen: gui.Screen, main_screen: gui.Screen,
                  data: RecipeGraph) -> None:
@@ -45,6 +51,8 @@ class AlgorithmProcessor:
         self.algorithm_screen = algorithm_screen
         self.main_screen = main_screen
         self.data = data
+        self.current_recipes = []
+        self.current_index = 0
 
     def go_to_main_menu(self) -> None:
         self.algorithm_screen.refresh_screen()
@@ -56,34 +64,42 @@ class AlgorithmProcessor:
         self.algorithm_screen.refresh_screen()
         if not recipe_name:
             recipes = self.data.find_recommendations(dietary, ingredients, allergies)
-            self.print_alternatives(recipes)
+            self.print_alternatives()
         else:
             recipe_name = recipe_name[0]
             if recipe_name not in self.data.recipe_name_to_id:
                 self._display_error("Recipe not found.")
                 return
             recipe_id = self.data.recipe_name_to_id[recipe_name]
-            alternatives = self.data.compute_alternative_recipe(dietary, ingredients, allergies, recipe_id)
-            self.print_alternatives(alternatives)
+            self.current_recipes = self.data.compute_alternative_recipe(dietary, ingredients, allergies, recipe_id)
+            self.print_alternatives()
 
-    def print_alternatives(self, alternatives: list[Recipe]) -> None:
+    def print_alternatives(self) -> None:
         if self.algorithm_screen.text is None:
             self.algorithm_screen.text = []
 
-        if not alternatives:
+        if not self.current_recipes:
             self._display_error("No alternatives found.")
             return
 
         y = 500
-        for recipe in alternatives[:5]:
-            text_obj = gui.Text(
-                recipe.get_name(),
-                pygame.Rect(0, 0, 0, 0),
-                (50, y),
-                25
-            )
-            self.algorithm_screen.text.append(text_obj)
-            y += 35
+        current_recipe = self.current_recipes[self.current_index]
+        recipe_name, recipe_ingredients, recipe_categories = (current_recipe.get_name(),
+                                                              current_recipe.get_ingredients(),
+                                                              current_recipe.get_categories())
+        recipe_ingredients = [ingredient.get_name() for ingredient in recipe_ingredients]
+        recipe_categories = [category.get_name() for category in recipe_categories]
+
+        current_recipe_name_text = gui.Text(recipe_name, pygame.Rect(0, 0, 0, 0), (50, y), 25)
+        self.algorithm_screen.text.append(current_recipe_name_text)
+
+        current_recipe_ingredients_text = gui.Text("Ingredients: " + list_to_str(recipe_ingredients),
+                                                   pygame.Rect(0, 0, 0, 0), (50, y), 25)
+        self.algorithm_screen.text.append(current_recipe_name_text)
+
+        current_recipe_catgeories_text = gui.Text("Categories: " + list_to_str(recipe_categories),
+                                                  pygame.Rect(0, 0, 0, 0), (50, y), 25)
+        self.algorithm_screen.text.append(current_recipe_name_text)
 
     def _display_error(self, error: str) -> None:
         if self.algorithm_screen.text is None:

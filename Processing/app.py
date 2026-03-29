@@ -11,10 +11,10 @@ from Data.recipe_graph import BASE_INDEX, CATEGORIES_INDEX, INGREDIENTS_INDEX, N
     UID_INDEX
 from Data.recipe_tree import NAME_TOKENS, RecipeTree
 
-RECIPES_CSV_PATH = "Data/Datasets/recipes.parquet"
-IS_RECIPE_CSV = False
-PAIRS_CSV_PATH = "Data/Datasets/pairs.parquet"
-IS_PAIRS_CSV = False
+RECIPES_CSV_PATH = "Data/Datasets/recipes.csv"
+IS_RECIPE_CSV = True
+PAIRS_CSV_PATH = "Data/Datasets/pairs.csv"
+IS_PAIRS_CSV = True
 
 BUTTON_COLOR = (148, 124, 92)
 SUBMIT_COLOR = (138, 154, 91)

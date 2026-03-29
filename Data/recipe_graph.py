@@ -235,7 +235,7 @@ class RecipeGraph:
 
         # Sort by similarity
         similarities.sort(reverse=True, key=lambda x: x[0])
-        return [r for _, r in similarities]
+        return [recipe for _, recipe in similarities[:(min(len(similarities), 50))]]
 
     def compute_alternative_recipe(self,categories: list[str], ingredients: list[str], allergies:list[str],recipe:int
                                    ) -> list[v.Recipe]:
@@ -283,12 +283,12 @@ class RecipeGraph:
                     ingredient_candidates.update(ing_vertex.get_recipes())
 
         # Collect all recipes connected to matching ingredient vertices
-        categeoories_candidates = set()
+        categories_candidates = set()
         for cat_name in categories_lower: #meow :3
             if cat_name in self.vertices:
                 cat_vertex = self.vertices[cat_name]
-                if isinstance(cat_vertex, v.Ingredient):
-                    categeoories_candidates.update(cat_vertex.get_recipes())
+                if isinstance(cat_vertex, v.Category):
+                    categories_candidates.update(cat_vertex.get_recipes())
 
         allergen_recipes = set()
         for allergy in allergies_lower:
@@ -296,7 +296,7 @@ class RecipeGraph:
                 allergen_recipes.update(self.vertices[allergy].get_recipes())
 
         # Score by most matches
-        candidates = (ingredient_candidates | categeoories_candidates) - allergen_recipes
+        candidates = (ingredient_candidates | categories_candidates) - allergen_recipes
         scores = []
         for r in candidates:
             recipe_ingredients = {i.get_name().lower() for i in r.get_ingredients()}
@@ -310,4 +310,4 @@ class RecipeGraph:
                 scores.append((total, r))
 
         scores.sort(reverse=True, key=lambda x: x[0])
-        return [r for _, r in scores[:3]]
+        return [recipe for _, recipe in scores[:(min(len(scores), 50))]]

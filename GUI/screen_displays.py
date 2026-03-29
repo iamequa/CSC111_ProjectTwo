@@ -273,6 +273,7 @@ class Text:
     top_left_coordinates: tuple[int, int]
     size: int
     _FONT: pygame.font.Font
+    _FONT_COLOR: tuple[int, int, int]
 
     def __init__(self, text: str, rect: pygame.rect.Rect, top_left_coordinates: tuple[int, int], size: int):
         self.rect = rect
@@ -282,7 +283,7 @@ class Text:
         self.rect.topleft = top_left_coordinates
 
     def draw_text(self, surface: pygame.Surface) -> None:
-        """Draws Text onto given surface"""
+        """Draws Text onto given surface, also wraps text around if it goes past rectangle."""
         text_surf = self._FONT.render(self.text, True, self._FONT_COLOR)
         text_rect = text_surf.get_rect(topleft=self.rect.topleft)
         surface.blit(text_surf, text_rect)

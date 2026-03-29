@@ -24,7 +24,7 @@ X_DIMENSIONS, Y_DIMENSIONS = 1000, 800
 
 MAIN_MENU_IMAGE_FILE_PATH = "GUI/design_features/backgrounds/title.png"
 ALGORITHM_IMAGE_FILE_PATH = "GUI/design_features/backgrounds/background.png"
-SEARCH_IMAGE_FILE_PATH = "GUI/design_features/backgrounds/background.png"
+SEARCH_IMAGE_FILE_PATH = "GUI/design_features/backgrounds/searchbg.png"
 
 TITLE_FONT = 50
 CAPTION_FONT = 20
@@ -114,7 +114,7 @@ class App:
 
     def __init__(self) -> None:
         self.recipe_graph, self.recipe_tree = build_recipe_structures(RECIPES_CSV_PATH, IS_RECIPE_CSV,
-                                                                           PAIRS_CSV_PATH, IS_PAIRS_CSV)
+                                                                      PAIRS_CSV_PATH, IS_PAIRS_CSV)
         pygame.init()
         pygame.display.set_caption(CAPTION)
 
@@ -155,12 +155,12 @@ class App:
 
         as3_rect = pygame.Rect(100, 50, 150, 45)
         self.as3_button = screen_displays.Button(
-            as3_rect, "->", SUBMIT_COLOR, None, (800, 550)
+            as3_rect, "Next", SUBMIT_COLOR, None, (800, 550)
         )
 
         as4_rect = pygame.Rect(100, 50, 150, 45)
         self.as4_button = screen_displays.Button(
-            as4_rect, "<-", SUBMIT_COLOR, None, (700, 550)
+            as4_rect, "Prev.", SUBMIT_COLOR, None, (700, 550)
         )
 
         # Search
@@ -173,10 +173,19 @@ class App:
         self.si2_button = screen_displays.Button(
             si2_rect, "Submit", SUBMIT_COLOR, None, (700, 600)
         )
+        si3_rect = pygame.Rect(100, 50, 150, 45)
+        self.si3_button = screen_displays.Button(
+            si3_rect, "Next", SUBMIT_COLOR, None, (800, 550)
+        )
+
+        si4_rect = pygame.Rect(100, 50, 150, 45)
+        self.si4_button = screen_displays.Button(
+            si4_rect, "Prev.", SUBMIT_COLOR, None, (700, 550)
+        )
 
         main_menu_screen_buttons = [self.mm1_button, self.mm2_button, self.mm3_button]
         algorithm_screen_buttons = [self.as1_button, self.as2_button, self.as3_button, self.as4_button]
-        search_screen_buttons = [self.si1_button, self.si2_button]
+        search_screen_buttons = [self.si1_button, self.si2_button, self.si3_button, self.si4_button]
 
         # -------------------- TEXT --------------------
 
@@ -192,37 +201,63 @@ class App:
 
         main_menu_screen_text = [mm_text1, mm_text2]
 
-        text_format1 = pygame.Rect(500, 500, 450, 60)
-        text_format2 = pygame.Rect(500, 500, 450, 60)
-        text_format3 = pygame.Rect(500, 500, 450, 60)
-        text_format4 = pygame.Rect(500, 500, 450, 60)
+        AS_text_format1 = pygame.Rect(500, 500, 450, 60)
+        AS_text_format2 = pygame.Rect(500, 500, 450, 60)
+        AS_text_format3 = pygame.Rect(500, 500, 450, 60)
+        AS_text_format4 = pygame.Rect(500, 500, 450, 60)
 
         question1 = '1. List Dietary Restrictions (Max 5). Enter 1 category at a time.'
         question2 = '2. List ingredients you want to use (Max 5). Enter 1 ingredient at a time.'
         question3 = '3. List any allergies (Max 5). Enter 1 ingredient to at a time.'
         question4 = '(Optional) List one type of recipe you want to make.'
 
-        text1 = screen_displays.Text(question1, text_format1, (50, 50), FONT_SIZE)
-        text2 = screen_displays.Text(question2, text_format2, (50, 170), FONT_SIZE)
-        text3 = screen_displays.Text(question3, text_format3, (50, 290), FONT_SIZE)
-        text4 = screen_displays.Text(question4, text_format4, (50, 410), FONT_SIZE)
+        AS_text1 = screen_displays.Text(question1, AS_text_format1, (50, 50), FONT_SIZE)
+        AS_text2 = screen_displays.Text(question2, AS_text_format2, (50, 170), FONT_SIZE)
+        AS_text3 = screen_displays.Text(question3, AS_text_format3, (50, 290), FONT_SIZE)
+        AS_text4 = screen_displays.Text(question4, AS_text_format4, (50, 410), FONT_SIZE)
 
-        algorithm_screen_text = [text1, text2, text3, text4]
+        algorithm_screen_text = [AS_text1, AS_text2, AS_text3, AS_text4]
+
+        SI_text_format1 = pygame.Rect(500, 500, 450, 60)
+        SI_text_format2 = pygame.Rect(500, 500, 450, 60)
+        SI_text_format3 = pygame.Rect(500, 500, 450, 60)
+
+        filter1 = 'Filter by: Ingredients, Category'
+        filter2 = 'Search:'
+        filter3 = 'Results:'
+
+        SI_text1 = screen_displays.Text(filter1, SI_text_format1, (200, 20), FONT_SIZE)
+        SI_text2 = screen_displays.Text(filter2, SI_text_format2, (600, 50), FONT_SIZE)
+        SI_text3 = screen_displays.Text(filter3, SI_text_format3, (10, 125), FONT_SIZE)
+
+        search_screen_text = [SI_text1, SI_text2, SI_text3]
 
         # -------------------- TEXTBOXES --------------------
 
-        textbox_format1 = pygame.Rect(500, 500, 450, 40)
-        textbox_format2 = pygame.Rect(500, 500, 450, 40)
-        textbox_format3 = pygame.Rect(500, 500, 450, 40)
-        textbox_format4 = pygame.Rect(500, 500, 450, 40)
+        AS_textbox_format1 = pygame.Rect(500, 500, 450, 40)
+        AS_textbox_format2 = pygame.Rect(500, 500, 450, 40)
+        AS_textbox_format3 = pygame.Rect(500, 500, 450, 40)
+        AS_textbox_format4 = pygame.Rect(500, 500, 450, 40)
 
-        self.textbox_q1 = screen_displays.TextBox(textbox_format1, (50, 100), 5)
-        self.textbox_q2 = screen_displays.TextBox(textbox_format2, (50, 220), 5)
-        self.textbox_q3 = screen_displays.TextBox(textbox_format3, (50, 340), 5)
-        self.textbox_q4 = screen_displays.TextBox(textbox_format4, (50, 460), 1)
+        self.AS_textbox_q1 = screen_displays.TextBox(AS_textbox_format1, (50, 100), 5)
+        self.AS_textbox_q2 = screen_displays.TextBox(AS_textbox_format2, (50, 220), 5)
+        self.AS_textbox_q3 = screen_displays.TextBox(AS_textbox_format3, (50, 340), 5)
+        self.AS_textbox_q4 = screen_displays.TextBox(AS_textbox_format4, (50, 460), 1)
 
         algorithm_screen_textboxes = [
-            self.textbox_q1, self.textbox_q2, self.textbox_q3, self.textbox_q4
+            self.AS_textbox_q1, self.AS_textbox_q2, self.AS_textbox_q3, self.AS_textbox_q4
+        ]
+
+        SI_textbox_format1 = pygame.Rect(500, 500, 150, 40)
+        SI_textbox_format2 = pygame.Rect(500, 500, 150, 40)
+        SI_textbox_format3 = pygame.Rect(500, 500, 150, 40)
+
+        self.SI_textbox_q1 = screen_displays.TextBox(SI_textbox_format1, (200, 50), 3)
+        self.SI_textbox_q2 = screen_displays.TextBox(SI_textbox_format2, (400, 50), 3)
+        self.SI_textbox_q3 = screen_displays.TextBox(SI_textbox_format3, (700, 50), 1)
+
+        search_screen_textboxes = [
+            self.SI_textbox_q1, self.SI_textbox_q2, self.SI_textbox_q3
         ]
 
         # -------------------- SCREENS --------------------
@@ -245,7 +280,9 @@ class App:
         self.search_screen = screen_displays.Screen(
             search_screen_buttons,
             SEARCH_IMAGE_FILE_PATH,
-            self.screen
+            self.screen,
+            textboxes=search_screen_textboxes,
+            text=search_screen_text
         )
 
         self.current_screen = screen_displays.ScreenOrganizer(self.main_menu_screen)
@@ -284,6 +321,8 @@ class App:
 
         self.si1_button.action = self.search_screen_processor.go_to_main_menu
         self.si2_button.action = self.search_screen_processor.search
+        self.si3_button.action = self.search_screen_processor.go_right
+        self.si4_button.action = self.search_screen_processor.go_left
 
     def run(self) -> None:
         while self.running:

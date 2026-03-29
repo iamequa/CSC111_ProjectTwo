@@ -7,7 +7,26 @@ from Data.vertex import Recipe
 
 
 def list_to_str(lst: list[str]) -> str:
-    return ", ".join(lst)
+    text = ", ".join(lst)
+
+    max_len = 50
+    lines = []
+    current_line = ""
+
+    for word in text.split(" "):
+        # +1 for the space
+        if len(current_line) + len(word) + 1 <= max_len:
+            if current_line:
+                current_line += " "
+            current_line += word
+        else:
+            lines.append(current_line)
+            current_line = word
+
+    if current_line:
+        lines.append(current_line)
+
+    return "\n".join(lines)
 
 
 class MainMenuProcessor:
@@ -57,22 +76,29 @@ class AlgorithmProcessor:
     def go_to_main_menu(self) -> None:
         self.algorithm_screen.refresh_screen()
         self.organizer.switch_screens(self.main_screen)
+        self.current_recipes, self.current_index = [], 0
 
     def give_recommendation(self) -> None:
         inputs = self.algorithm_screen.get_textbox_inputs()
         dietary, ingredients, allergies, recipe_name = inputs[0], inputs[1], inputs[2], inputs[3]
+
         self.algorithm_screen.refresh_screen()
+        if len(inputs[0]) == len(inputs[1]) == len(inputs[2]) == 0:
+            self._display_error("Please enter at least one filter.")
+            return
+        self.algorithm_screen.refresh_screen()
+        self.current_index = 0
+
         if not recipe_name:
-            recipes = self.data.find_recommendations(dietary, ingredients, allergies)
-            self.print_alternatives()
+            self.current_recipes = self.data.find_recommendations(dietary, ingredients, allergies)
         else:
-            recipe_name = recipe_name[0]
+            recipe_name = recipe_name[0].lower().strip()
             if recipe_name not in self.data.recipe_name_to_id:
                 self._display_error("Recipe not found.")
                 return
             recipe_id = self.data.recipe_name_to_id[recipe_name]
             self.current_recipes = self.data.compute_alternative_recipe(dietary, ingredients, allergies, recipe_id)
-            self.print_alternatives()
+        self.print_alternatives()
 
     def print_alternatives(self) -> None:
         if self.algorithm_screen.text is None:
@@ -82,24 +108,7 @@ class AlgorithmProcessor:
             self._display_error("No alternatives found.")
             return
 
-        y = 500
-        current_recipe = self.current_recipes[self.current_index]
-        recipe_name, recipe_ingredients, recipe_categories = (current_recipe.get_name(),
-                                                              current_recipe.get_ingredients(),
-                                                              current_recipe.get_categories())
-        recipe_ingredients = [ingredient.get_name() for ingredient in recipe_ingredients]
-        recipe_categories = [category.get_name() for category in recipe_categories]
-
-        current_recipe_name_text = gui.Text(recipe_name, pygame.Rect(0, 0, 0, 0), (50, y), 25)
-        self.algorithm_screen.text.append(current_recipe_name_text)
-
-        current_recipe_ingredients_text = gui.Text("Ingredients: " + list_to_str(recipe_ingredients),
-                                                   pygame.Rect(0, 0, 0, 0), (50, y), 25)
-        self.algorithm_screen.text.append(current_recipe_name_text)
-
-        current_recipe_catgeories_text = gui.Text("Categories: " + list_to_str(recipe_categories),
-                                                  pygame.Rect(0, 0, 0, 0), (50, y), 25)
-        self.algorithm_screen.text.append(current_recipe_name_text)
+        self.make_alternatives()
 
     def _display_error(self, error: str) -> None:
         if self.algorithm_screen.text is None:
@@ -108,11 +117,50 @@ class AlgorithmProcessor:
         error_text = gui.Text(
             error,
             pygame.Rect(0, 0, 0, 0),
-            (50, 820),
+            (50, 550),
             25
         )
         self.algorithm_screen.text.append(error_text)
 
+    def go_right(self) -> None:
+        self.algorithm_screen.refresh_screen()
+        if self.current_recipes == [] and self.current_index == 0:
+            self._display_error("Either you have not pressed submit or we \nhave found no recipes, sorry!")
+        elif len(self.current_recipes) - 1 <= self.current_index:
+            self.make_alternatives()
+        else:
+            self.current_index += 1
+            self.make_alternatives()
+
+    def go_left(self) -> None:
+        self.algorithm_screen.refresh_screen()
+        if self.current_recipes == [] and self.current_index == 0:
+            self._display_error("Either you have not pressed submit or we \nhave found no recipes, sorry!")
+        elif self.current_index <= 0:
+            self.make_alternatives()
+        else:
+            self.current_index -= 1
+            self.make_alternatives()
+
+    def make_alternatives(self) -> None:
+        y = 520
+        current_recipe = self.current_recipes[self.current_index]
+        recipe_name, recipe_ingredients, recipe_categories = (current_recipe.get_name(),
+                                                              current_recipe.get_ingredients(),
+                                                              current_recipe.get_categories())
+        recipe_ingredients = [ingredient.get_name() for ingredient in recipe_ingredients]
+        recipe_categories = [category.get_name() for category in recipe_categories]
+
+        current_recipe_name_text = gui.Text(recipe_name, pygame.Rect(0, 0, 0, 0), (50, y), 20)
+        self.algorithm_screen.text.append(current_recipe_name_text)
+
+        current_recipe_ingredients_text = gui.Text("Ingredients: " + list_to_str(recipe_ingredients),
+                                                   pygame.Rect(0, 0, 0, 0), (50, y + 60), 20)
+        self.algorithm_screen.text.append(current_recipe_ingredients_text)
+
+        current_recipe_categories_text = gui.Text("Categories: " + list_to_str(recipe_categories),
+                                                  pygame.Rect(0, 0, 0, 0), (50, y + 180), 20)
+        self.algorithm_screen.text.append(current_recipe_categories_text)
 
 class SearchProcessor:
     organizer: gui.ScreenOrganizer

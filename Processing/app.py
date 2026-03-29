@@ -127,14 +127,19 @@ class App:
         # -------------------- BUTTONS --------------------
 
         # Main menu
-        mm1_rect = pygame.Rect(500, 500, 150, 45)
+        mm1_rect = pygame.Rect(500, 540, 150, 45)
         self.mm1_button = screen_displays.Button(
             mm1_rect, "Survey", BUTTON_COLOR, None, (400, 590)
         )
 
         mm2_rect = pygame.Rect(500, 600, 150, 45)
         self.mm2_button = screen_displays.Button(
-            mm2_rect, "Search", BUTTON_COLOR, None, (400, 690)
+            mm2_rect, "Search", BUTTON_COLOR, None, (400, 650)
+        )
+
+        mm3_rect = pygame.Rect(500, 660, 150, 45)
+        self.mm3_button = screen_displays.Button(
+            mm3_rect, "Quit", BUTTON_COLOR, None, (400, 710)
         )
 
         # Algorithm
@@ -145,7 +150,17 @@ class App:
 
         as2_rect = pygame.Rect(100, 100, 150, 45)
         self.as2_button = screen_displays.Button(
-            as2_rect, "Submit", SUBMIT_COLOR, None, (700, 700)
+            as2_rect, "Submit", SUBMIT_COLOR, None, (750, 700)
+        )
+
+        as3_rect = pygame.Rect(100, 50, 150, 45)
+        self.as3_button = screen_displays.Button(
+            as3_rect, "->", SUBMIT_COLOR, None, (800, 550)
+        )
+
+        as4_rect = pygame.Rect(100, 50, 150, 45)
+        self.as4_button = screen_displays.Button(
+            as4_rect, "<-", SUBMIT_COLOR, None, (700, 550)
         )
 
         # Search
@@ -159,8 +174,8 @@ class App:
             si2_rect, "Submit", SUBMIT_COLOR, None, (700, 600)
         )
 
-        main_menu_screen_buttons = [self.mm1_button, self.mm2_button]
-        algorithm_screen_buttons = [self.as1_button, self.as2_button]
+        main_menu_screen_buttons = [self.mm1_button, self.mm2_button, self.mm3_button]
+        algorithm_screen_buttons = [self.as1_button, self.as2_button, self.as3_button, self.as4_button]
         search_screen_buttons = [self.si1_button, self.si2_button]
 
         # -------------------- TEXT --------------------
@@ -247,22 +262,25 @@ class App:
             self.current_screen,
             self.algorithm_screen,
             self.main_menu_screen,
-            self.recipe_graph  # replace with RecipeGraph later
+            self.recipe_graph
         )
 
         self.search_screen_processor = processing.SearchProcessor(
             self.current_screen,
             self.search_screen,
             self.main_menu_screen,
-            self.recipe_tree  # replace with RecipeTree later
+            self.recipe_tree
         )
 
         # Assign button actions
         self.mm1_button.action = self.main_menu_processor.go_to_survey
         self.mm2_button.action = self.main_menu_processor.go_to_search
+        self.mm3_button.action = self.main_menu_processor.exit_app
 
         self.as1_button.action = self.algorithm_screen_processor.go_to_main_menu
         self.as2_button.action = self.algorithm_screen_processor.give_recommendation
+        self.as3_button.action = self.algorithm_screen_processor.go_right
+        self.as4_button.action = self.algorithm_screen_processor.go_left
 
         self.si1_button.action = self.search_screen_processor.go_to_main_menu
         self.si2_button.action = self.search_screen_processor.search

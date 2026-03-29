@@ -30,7 +30,7 @@ class Button:
     def __init__(self, rect: pygame.Rect, text: str, color: tuple[int, int, int],
                  action: Callable[..., None] | None, top_left_coordinates: tuple[int, int]):
         self.rect = rect
-        self._FONT_SIZE = 30
+        self._FONT_SIZE = 25
         self._FONT_COLOR = (0, 0, 0)
         self._font = pygame.font.Font(FONT_PATH, self._FONT_SIZE)
         self.text = text
@@ -135,9 +135,9 @@ class Screen:
                 text = self.text.pop()
                 text.remove_text()
 
-    def get_textbox_inputs(self) -> list[str]:
+    def get_textbox_inputs(self) -> list[list[str]]:
         """Returns all the text inputted in Textbox"""
-        return [textbox.text_inputted for textbox in self.textboxes]
+        return [textbox.all_text_inputted for textbox in self.textboxes]
 
 
 class ScreenOrganizer:
@@ -163,6 +163,7 @@ class TextBox:
          - top_left_coordinates: the top left coordinates of TextBox
          - processor: a TextBoxProcessor that processes the user's entry and stores it
          - limit: maximum number of entries for TextBox
+         - all_text_inputted: list of all the entries inputted by user
      Private Instance Attributes:
          - _enabled: bool representing if TextBox is enabled or not
          - _text_active: bool representing if TextBox is active or not
@@ -171,7 +172,6 @@ class TextBox:
          - _FONT: the font of the text in Textbox
          - _TEXTBOX_COLOR: constant representing color of TextBox
          - _TEXTBOX_WIDTH: constant representing the width of TextBox
-         - _all_text_inputted: list of all the entries inputted by user
      """
     rect: pygame.Rect
     text_inputted: str
@@ -184,21 +184,21 @@ class TextBox:
     _FONT: pygame.font.Font
     _TEXTBOX_COLOR: tuple[int, int, int]
     _TEXTBOX_WIDTH: int
-    _all_text_inputted: list[str]
+    all_text_inputted: list[str]
 
     def __init__(self, rect: pygame.Rect, top_left_coordinates: tuple[int, int], limit: int):
         self.rect = rect
         self.top_left_coordinates = top_left_coordinates
         self.rect.topleft = top_left_coordinates
         self.limit = limit
-        self._FONT_SIZE = 30
+        self._FONT_SIZE = 20
         self._FONT_COLOR = (0, 0, 0)
         self._TEXTBOX_COLOR = (245, 245, 220)
-        self._TEXTBOX_WIDTH = 60
+        self._TEXTBOX_WIDTH = 45
         self._FONT = pygame.font.Font(FONT_PATH, self._FONT_SIZE)
         self.text_inputted = ''
         self._text_active = False
-        self._all_text_inputted = []
+        self.all_text_inputted = []
         self._enabled = True
 
     def draw_textbox(self, surface: pygame.Surface) -> None:
@@ -245,16 +245,16 @@ class TextBox:
 
     def process_final_answer(self, text_inputted: str):
         """Updates final answer """
-        if len(self._all_text_inputted) < self.limit:
+        if len(self.all_text_inputted) < self.limit:
             print('if reached')
-            self._all_text_inputted.append(text_inputted)
-            if len(self._all_text_inputted) == self.limit:
+            self.all_text_inputted.append(text_inputted.lower().strip())
+            if len(self.all_text_inputted) == self.limit:
                 return 'Limit Reached'
         return None
 
     def refresh_answers(self):
         """Resets the user's inputted answers."""
-        self._all_text_inputted = []
+        self.all_text_inputted = []
 
 
 class Text:
@@ -266,6 +266,7 @@ class Text:
         - size: the font size of the text
     Private Instance Attributes:
         - _FONT: the font of the text
+        - _FONT_COLOR: constant that represents the color of the font
     """
     text: str
     rect: pygame.rect.Rect
@@ -276,13 +277,13 @@ class Text:
     def __init__(self, text: str, rect: pygame.rect.Rect, top_left_coordinates: tuple[int, int], size: int):
         self.rect = rect
         self._FONT = pygame.font.Font(FONT_PATH, size)
+        self._FONT_COLOR = (0, 0, 0)
         self.text = text
         self.rect.topleft = top_left_coordinates
 
     def draw_text(self, surface: pygame.Surface) -> None:
         """Draws Text onto given surface"""
-        BLACK = (0, 0, 0)
-        text_surf = self._FONT.render(self.text, True, BLACK)
+        text_surf = self._FONT.render(self.text, True, self._FONT_COLOR)
         text_rect = text_surf.get_rect(topleft=self.rect.topleft)
         surface.blit(text_surf, text_rect)
 

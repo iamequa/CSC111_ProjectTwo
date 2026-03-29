@@ -20,7 +20,7 @@ BUTTON_COLOR = (148, 124, 92)
 SUBMIT_COLOR = (138, 154, 91)
 
 CAPTION = 'The Ultimate Recipe Index >:)'
-X_DIMENSIONS, Y_DIMENSIONS = 1000, 1000
+X_DIMENSIONS, Y_DIMENSIONS = 1000, 800
 
 MAIN_MENU_IMAGE_FILE_PATH = "GUI/design_features/backgrounds/title.png"
 ALGORITHM_IMAGE_FILE_PATH = "GUI/design_features/backgrounds/background.png"
@@ -28,7 +28,7 @@ SEARCH_IMAGE_FILE_PATH = "GUI/design_features/backgrounds/background.png"
 
 TITLE_FONT = 50
 CAPTION_FONT = 20
-FONT_SIZE = 30
+FONT_SIZE = 25
 
 TITLE = 'THE ULTIMATE RECIPE INDEX!!!'
 CREDITS = 'By Arwa, Ema, Mostafa, and Noon!!'
@@ -127,36 +127,36 @@ class App:
         # -------------------- BUTTONS --------------------
 
         # Main menu
-        mm1_rect = pygame.Rect(500, 500, 200, 60)
+        mm1_rect = pygame.Rect(500, 500, 150, 45)
         self.mm1_button = screen_displays.Button(
-            mm1_rect, "Survey", BUTTON_COLOR, None, (400, 640)
+            mm1_rect, "Survey", BUTTON_COLOR, None, (400, 590)
         )
 
-        mm2_rect = pygame.Rect(500, 600, 200, 60)
+        mm2_rect = pygame.Rect(500, 600, 150, 45)
         self.mm2_button = screen_displays.Button(
-            mm2_rect, "Search", BUTTON_COLOR, None, (400, 740)
+            mm2_rect, "Search", BUTTON_COLOR, None, (400, 690)
         )
 
         # Algorithm
-        as1_rect = pygame.Rect(50, 50, 200, 60)
+        as1_rect = pygame.Rect(50, 50, 160, 45)
         self.as1_button = screen_displays.Button(
             as1_rect, "Return to Menu", BUTTON_COLOR, None, (0, 0)
         )
 
-        as2_rect = pygame.Rect(100, 100, 200, 60)
+        as2_rect = pygame.Rect(100, 100, 150, 45)
         self.as2_button = screen_displays.Button(
             as2_rect, "Submit", SUBMIT_COLOR, None, (700, 700)
         )
 
         # Search
-        si1_rect = pygame.Rect(50, 50, 200, 60)
+        si1_rect = pygame.Rect(50, 50, 160, 45)
         self.si1_button = screen_displays.Button(
             si1_rect, "Return to Menu", BUTTON_COLOR, None, (0, 0)
         )
 
-        si2_rect = pygame.Rect(100, 100, 200, 60)
+        si2_rect = pygame.Rect(100, 100, 150, 45)
         self.si2_button = screen_displays.Button(
-            si2_rect, "Submit", SUBMIT_COLOR, None, (700, 700)
+            si2_rect, "Submit", SUBMIT_COLOR, None, (700, 600)
         )
 
         main_menu_screen_buttons = [self.mm1_button, self.mm2_button]
@@ -187,24 +187,24 @@ class App:
         question3 = '3. List any allergies (Max 5). Enter 1 ingredient to at a time.'
         question4 = '(Optional) List one type of recipe you want to make.'
 
-        text1 = screen_displays.Text(question1, text_format1, (50, 100), FONT_SIZE)
-        text2 = screen_displays.Text(question2, text_format2, (50, 300), FONT_SIZE)
-        text3 = screen_displays.Text(question3, text_format3, (50, 500), FONT_SIZE)
-        text4 = screen_displays.Text(question4, text_format4, (50, 700), FONT_SIZE)
+        text1 = screen_displays.Text(question1, text_format1, (50, 50), FONT_SIZE)
+        text2 = screen_displays.Text(question2, text_format2, (50, 170), FONT_SIZE)
+        text3 = screen_displays.Text(question3, text_format3, (50, 290), FONT_SIZE)
+        text4 = screen_displays.Text(question4, text_format4, (50, 410), FONT_SIZE)
 
         algorithm_screen_text = [text1, text2, text3, text4]
 
         # -------------------- TEXTBOXES --------------------
 
-        textbox_format1 = pygame.Rect(500, 500, 450, 60)
-        textbox_format2 = pygame.Rect(500, 500, 450, 60)
-        textbox_format3 = pygame.Rect(500, 500, 450, 60)
-        textbox_format4 = pygame.Rect(500, 500, 450, 60)
+        textbox_format1 = pygame.Rect(500, 500, 450, 40)
+        textbox_format2 = pygame.Rect(500, 500, 450, 40)
+        textbox_format3 = pygame.Rect(500, 500, 450, 40)
+        textbox_format4 = pygame.Rect(500, 500, 450, 40)
 
-        self.textbox_q1 = screen_displays.TextBox(textbox_format1, (50, 150), 5)
-        self.textbox_q2 = screen_displays.TextBox(textbox_format2, (50, 350), 5)
-        self.textbox_q3 = screen_displays.TextBox(textbox_format3, (50, 550), 5)
-        self.textbox_q4 = screen_displays.TextBox(textbox_format4, (50, 750), 1)
+        self.textbox_q1 = screen_displays.TextBox(textbox_format1, (50, 100), 5)
+        self.textbox_q2 = screen_displays.TextBox(textbox_format2, (50, 220), 5)
+        self.textbox_q3 = screen_displays.TextBox(textbox_format3, (50, 340), 5)
+        self.textbox_q4 = screen_displays.TextBox(textbox_format4, (50, 460), 1)
 
         algorithm_screen_textboxes = [
             self.textbox_q1, self.textbox_q2, self.textbox_q3, self.textbox_q4

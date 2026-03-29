@@ -3,7 +3,6 @@ import pygame
 import GUI.screen_displays as gui
 from Data.recipe_tree import RecipeTree
 from Data.recipe_graph import RecipeGraph
-from Data.file_reader import process_varchar_list
 from Data.vertex import Recipe
 
 
@@ -52,18 +51,20 @@ class AlgorithmProcessor:
         self.organizer.switch_screens(self.main_screen)
 
     def give_recommendation(self) -> None:
-        self.algorithm_screen.refresh_screen()
         inputs = self.algorithm_screen.get_textbox_inputs()
-        dietary = process_varchar_list(inputs[0])
-        ingredients = process_varchar_list(inputs[1])
-        allergies = process_varchar_list(inputs[2])
-        recipe_name = inputs[3].lower()
-        if recipe_name not in self.data.recipe_name_to_id:
-            self._display_error("Recipe not found.")
-            return
-        recipe_id = self.data.recipe_name_to_id[recipe_name]
-        alternatives = self.data.compute_alternative_recipe(dietary, ingredients, allergies, recipe_id)
-        self.print_alternatives(alternatives)
+        dietary, ingredients, allergies, recipe_name = inputs[0], inputs[1], inputs[2], inputs[3]
+        self.algorithm_screen.refresh_screen()
+        if not recipe_name:
+            recipes = self.data.find_recommendations(dietary, ingredients, allergies)
+            self.print_alternatives(recipes)
+        else:
+            recipe_name = recipe_name[0]
+            if recipe_name not in self.data.recipe_name_to_id:
+                self._display_error("Recipe not found.")
+                return
+            recipe_id = self.data.recipe_name_to_id[recipe_name]
+            alternatives = self.data.compute_alternative_recipe(dietary, ingredients, allergies, recipe_id)
+            self.print_alternatives(alternatives)
 
     def print_alternatives(self, alternatives: list[Recipe]) -> None:
         if self.algorithm_screen.text is None:
@@ -73,7 +74,7 @@ class AlgorithmProcessor:
             self._display_error("No alternatives found.")
             return
 
-        y = 820
+        y = 500
         for recipe in alternatives[:5]:
             text_obj = gui.Text(
                 recipe.get_name(),

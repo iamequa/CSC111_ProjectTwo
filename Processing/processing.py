@@ -52,6 +52,7 @@ class AlgorithmProcessor:
         self.organizer.switch_screens(self.main_screen)
 
     def give_recommendation(self) -> None:
+        self.algorithm_screen.refresh_screen()
         inputs = self.algorithm_screen.get_textbox_inputs()
         dietary = process_varchar_list(inputs[0])
         ingredients = process_varchar_list(inputs[1])

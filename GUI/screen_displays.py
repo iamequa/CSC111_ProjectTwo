@@ -28,7 +28,7 @@ class Button:
     _FONT_SIZE: int
 
     def __init__(self, rect: pygame.Rect, text: str, color: tuple[int, int, int],
-                 action: Optional[Callable[..., None]], top_left_coordinates: tuple[int, int]):
+                 action: Callable[..., None] | None, top_left_coordinates: tuple[int, int]):
         self.rect = rect
         self._FONT_SIZE = 30
         self._FONT_COLOR = (0, 0, 0)
@@ -135,8 +135,8 @@ class Screen:
                 text = self.text.pop()
                 text.remove_text()
 
-
-def get_textbox_inputs(self) -> list[str]:
+    def get_textbox_inputs(self) -> list[str]:
+        """Returns all the text inputted in Textbox"""
         return [textbox.text_inputted for textbox in self.textboxes]
 
 

@@ -5,31 +5,10 @@ from Data.recipe_tree import RecipeTree
 from Data.recipe_graph import RecipeGraph
 from Data.vertex import Recipe
 
-ERROR_MESSAGE = "Either you have not pressed submit or we \nhave found no recipes, sorry!"
-
+ERROR_MESSAGE = "Either you have not pressed submit or we have found no recipes, sorry!"
 
 def list_to_str(lst: list[str]) -> str:
-    text = ", ".join(lst)
-
-    max_len = 50
-    lines = []
-    current_line = ""
-
-    for word in text.split(" "):
-        # +1 for the space
-        if len(current_line) + len(word) + 1 <= max_len:
-            if current_line:
-                current_line += " "
-            current_line += word
-        else:
-            lines.append(current_line)
-            current_line = word
-
-    if current_line:
-        lines.append(current_line)
-
-    return "\n".join(lines)
-
+    return ", ".join(lst)
 
 class MainMenuProcessor:
     """Handles logic for the main menu screen.
@@ -134,9 +113,9 @@ class AlgorithmProcessor:
 
         error_text = gui.Text(
             error,
-            pygame.Rect(0, 0, 0, 0),
+            pygame.Rect(0, 0, 550, 500),
             (50, 550),
-            25
+            30
         )
         self.algorithm_screen.text.append(error_text)
 
@@ -169,16 +148,12 @@ class AlgorithmProcessor:
         recipe_ingredients = [ingredient.get_name() for ingredient in recipe_ingredients]
         recipe_categories = [category.get_name() for category in recipe_categories]
 
-        current_recipe_name_text = gui.Text(recipe_name, pygame.Rect(0, 0, 0, 0), (50, y), 20)
-        self.algorithm_screen.text.append(current_recipe_name_text)
-
-        current_recipe_ingredients_text = gui.Text("Ingredients: " + list_to_str(recipe_ingredients),
-                                                   pygame.Rect(0, 0, 0, 0), (50, y + 60), 20)
-        self.algorithm_screen.text.append(current_recipe_ingredients_text)
-
-        current_recipe_categories_text = gui.Text("Categories: " + list_to_str(recipe_categories),
-                                                  pygame.Rect(0, 0, 0, 0), (50, y + 180), 20)
-        self.algorithm_screen.text.append(current_recipe_categories_text)
+        current_recipe_text = gui.Text(recipe_name +
+                                       "\nIngredients: " + list_to_str(recipe_ingredients) +
+                                       "\nCategories: " + list_to_str(recipe_categories),
+                                       pygame.Rect(0, 0, 550, 500)
+                                       , (50, y), 30)
+        self.algorithm_screen.text.append(current_recipe_text)
 
 
 class SearchProcessor:
@@ -221,8 +196,8 @@ class SearchProcessor:
 
         error_text = gui.Text(
             error,
-            pygame.Rect(0, 0, 100, 20),
-            (50, 550),
+            pygame.Rect(0, 0, 400, 500),
+            (50, 200),
             25
         )
         self.search_screen.text.append(error_text)
@@ -268,28 +243,13 @@ class SearchProcessor:
 
     def print_search_results(self, search_results: list[Recipe]) -> None:
         """Prints all the search results based off search_results."""
-        y = 225
         if self.search_screen.text is None:
             self.search_screen.text = []
 
         if not search_results:
-            no_results = gui.Text(
-                "No recipes found.",
-                pygame.Rect(0, 0, 100, 20),
-                (50, 250),
-                25,
-            )
-            self.search_screen.text.append(no_results)
+            self._display_error("No recipes found.")
             return
-        for recipe in search_results[:15]:
-            text_obj = gui.Text(
-                recipe.get_name(),
-                pygame.Rect(0, 0, 100, 20),
-                (50, y),
-                25,
-            )
-            self.search_screen.text.append(text_obj)
-            y += 35
+        self.show_alternatives()
 
     def show_alternatives(self) -> None:  # change the name
         """Takes recipe alternative at current index and prints it on screen."""
@@ -301,13 +261,9 @@ class SearchProcessor:
         recipe_ingredients = [ingredient.get_name() for ingredient in recipe_ingredients]
         recipe_categories = [category.get_name() for category in recipe_categories]
 
-        current_recipe_name_text = gui.Text(recipe_name, pygame.Rect(0, 0, 0, 0), (50, y), 20)
-        self.search_screen.text.append(current_recipe_name_text)
-
-        current_recipe_ingredients_text = gui.Text("Ingredients: " + list_to_str(recipe_ingredients),
-                                                   pygame.Rect(0, 0, 0, 0), (50, y + 60), 20)
-        self.search_screen.text.append(current_recipe_ingredients_text)
-
-        current_recipe_categories_text = gui.Text("Categories: " + list_to_str(recipe_categories),
-                                                  pygame.Rect(0, 0, 0, 0), (50, y + 180), 20)
-        self.search_screen.text.append(current_recipe_categories_text)
+        current_recipe_text = gui.Text(recipe_name +
+                                            "\nIngredients: " + list_to_str(recipe_ingredients) +
+                                            "\nCategories: " + list_to_str(recipe_categories),
+                                            pygame.Rect(0, 0, 550, 300)
+                                            ,(50, y), 20)
+        self.search_screen.text.append(current_recipe_text)

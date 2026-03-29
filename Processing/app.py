@@ -24,7 +24,7 @@ X_DIMENSIONS, Y_DIMENSIONS = 1000, 800
 
 MAIN_MENU_IMAGE_FILE_PATH = "GUI/design_features/backgrounds/title.png"
 ALGORITHM_IMAGE_FILE_PATH = "GUI/design_features/backgrounds/background.png"
-SEARCH_IMAGE_FILE_PATH = "GUI/design_features/backgrounds/searchbg.png"
+SEARCH_IMAGE_FILE_PATH = "GUI/design_features/backgrounds/background.png"
 
 TITLE_FONT = 50
 CAPTION_FONT = 20
@@ -129,17 +129,17 @@ class App:
         # Main menu
         mm1_rect = pygame.Rect(500, 540, 150, 45)
         self.mm1_button = screen_displays.Button(
-            mm1_rect, "Survey", BUTTON_COLOR, None, (400, 590)
+            mm1_rect, "Survey", BUTTON_COLOR, None, (425, 590)
         )
 
         mm2_rect = pygame.Rect(500, 600, 150, 45)
         self.mm2_button = screen_displays.Button(
-            mm2_rect, "Search", BUTTON_COLOR, None, (400, 650)
+            mm2_rect, "Search", BUTTON_COLOR, None, (425, 650)
         )
 
         mm3_rect = pygame.Rect(500, 660, 150, 45)
         self.mm3_button = screen_displays.Button(
-            mm3_rect, "Quit", BUTTON_COLOR, None, (400, 710)
+            mm3_rect, "Quit", BUTTON_COLOR, None, (425, 710)
         )
 
         # Algorithm
@@ -189,22 +189,22 @@ class App:
 
         # -------------------- TEXT --------------------
 
-        main_text_format1 = pygame.Rect(500, 500, 450, 60)
-        main_text_format2 = pygame.Rect(500, 500, 450, 60)
+        main_text_format1 = pygame.Rect(500, 500, 1000, 1000)
+        main_text_format2 = pygame.Rect(500, 500, 1000, 1000)
 
         mm_text1 = screen_displays.Text(
-            TITLE, main_text_format1, (200, 75), TITLE_FONT
+            TITLE, main_text_format1, (175, 75), TITLE_FONT
         )
         mm_text2 = screen_displays.Text(
-            CREDITS, main_text_format2, (250, 150), CAPTION_FONT
+            CREDITS, main_text_format2, (300, 150), CAPTION_FONT
         )
 
         main_menu_screen_text = [mm_text1, mm_text2]
 
-        AS_text_format1 = pygame.Rect(500, 500, 450, 60)
-        AS_text_format2 = pygame.Rect(500, 500, 450, 60)
-        AS_text_format3 = pygame.Rect(500, 500, 450, 60)
-        AS_text_format4 = pygame.Rect(500, 500, 450, 60)
+        AS_text_format1 = pygame.Rect(500, 500, 1000, 60)
+        AS_text_format2 = pygame.Rect(500, 500, 1000, 60)
+        AS_text_format3 = pygame.Rect(500, 500, 1000, 60)
+        AS_text_format4 = pygame.Rect(500, 500, 1000, 60)
 
         question1 = '1. List Dietary Restrictions (Max 5). Enter 1 category at a time.'
         question2 = '2. List ingredients you want to use (Max 5). Enter 1 ingredient at a time.'

@@ -283,10 +283,52 @@ class Text:
         self.rect.topleft = top_left_coordinates
 
     def draw_text(self, surface: pygame.Surface) -> None:
-        """Draws Text onto given surface, also wraps text around if it goes past rectangle."""
-        text_surf = self._FONT.render(self.text, True, self._FONT_COLOR)
-        text_rect = text_surf.get_rect(topleft=self.rect.topleft)
-        surface.blit(text_surf, text_rect)
+        """Draw multiline text with wrapping + ellipsis if too tall."""
+
+        x, y = self.rect.topleft
+        max_width = self.rect.width if self.rect.width > 0 else None
+        max_height = self.rect.height if self.rect.height > 0 else None
+
+        line_height = self._FONT.get_height()
+        current_y = y
+
+        lines = self.text.split("\n")
+
+        for line in lines:
+            words = line.split(" ")
+            current_line = ""
+
+            for word in words:
+                test_line = current_line + (" " if current_line else "") + word
+                test_surf = self._FONT.render(test_line, True, self._FONT_COLOR)
+
+                if max_width is None or test_surf.get_width() <= max_width:
+                    current_line = test_line
+                else:
+                    # BEFORE drawing, check height
+                    if max_height is not None and current_y + line_height > y + max_height:
+                        self._draw_ellipsis(surface, x, current_y)
+                        return
+
+                    text_surf = self._FONT.render(current_line, True, self._FONT_COLOR)
+                    surface.blit(text_surf, (x, current_y))
+                    current_y += line_height
+                    current_line = word
+
+            # Draw last part of line
+            if current_line:
+                if max_height is not None and current_y + line_height > y + max_height:
+                    self._draw_ellipsis(surface, x, current_y)
+                    return
+
+                text_surf = self._FONT.render(current_line, True, self._FONT_COLOR)
+                surface.blit(text_surf, (x, current_y))
+                current_y += line_height
+
+    def _draw_ellipsis(self, surface: pygame.Surface, x: int, y: int) -> None:
+        """Draws '...' at the cutoff point."""
+        ellipsis = self._FONT.render("...", True, self._FONT_COLOR)
+        surface.blit(ellipsis, (x, y))
 
     def remove_text(self) -> None:
         """Removes text off-screen."""

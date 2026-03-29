@@ -80,6 +80,9 @@ class Recipe(Vertex):
         """Returns additional information about this recipe"""
         return self._name_tokens
 
+    def get_steps(self) -> str:
+        return self._STEPS
+
     def get_paired_recipes(self) -> dict[Category, set[Recipe]]:
         """Returns all the paired recipes and replacements for this recipe"""
         return self._paired_recipes

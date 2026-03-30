@@ -20,6 +20,13 @@ TARGET_INDEX = 1
 NAME_OVERLAP_INDEX = 2
 NAME_SIMILARITY_INDEX = 3
 
+SIMILARITY_SCORE_INDEX = 0
+INGREDIENT_SIMILARITY_MULTIPLER = 2
+CATEGORY_SIMILARITY_MULTIPLER = 3
+MAX_RECIPES = 50
+
+NO_SIMILARITY_SCORE = 0
+
 
 def build_recipe_graph(recipes_path: str, is_recipes_csv: bool, pairs_path: str, is_pairs_csv: bool) -> RecipeGraph:
     """
@@ -135,7 +142,7 @@ class RecipeGraph:
         return self._matches_user_preferences_sets(categories, ingredients, allergies,
                                                    recipe_ingredients, recipe_categories)
 
-    def find_paired_recipe(self,categories: list[str], ingredients: list[str], allergies:list[str],recipe:int
+    def find_paired_recipe(self, categories: list[str], ingredients: list[str], allergies: list[str], recipe: int
                            ) -> list[v.Recipe]:
         """
         Return recipes that are explicitly paired with the given recipe
@@ -161,12 +168,13 @@ class RecipeGraph:
         paired = list(recipe_vertex.get_paired_recipes())
 
         # Filter based on user preferences
-        filtered = [r for r in paired if isinstance(r, v.Recipe) and self._matches_user_preferences(categories, ingredients, allergies,
-                                                                                                    r)]
+        filtered = [r for r in paired if
+                    isinstance(r, v.Recipe) and self._matches_user_preferences(categories, ingredients, allergies,
+                                                                               r)]
 
         return filtered
 
-    def find_similar_recipe(self,categories: list[str], ingredients: list[str], allergies:list[str],recipe: int
+    def find_similar_recipe(self, categories: list[str], ingredients: list[str], allergies: list[str], recipe: int
                             ) -> list[v.Recipe]:
         """
         Return recipes similar to the given recipe based on shared ingredients
@@ -234,20 +242,19 @@ class RecipeGraph:
                 similarities.append((score, other))
 
         # Sort by similarity
-        similarities.sort(reverse=True, key=lambda x: x[0])
-        return [recipe for _, recipe in similarities[:(min(len(similarities), 50))]]
+        similarities.sort(reverse=True, key=lambda x: x[SIMILARITY_SCORE_INDEX])
+        return [recipe for _, recipe in similarities[:(min(len(similarities), MAX_RECIPES))]]
 
-    def compute_alternative_recipe(self,categories: list[str], ingredients: list[str], allergies:list[str],recipe:int
+    def compute_alternative_recipe(self, categories: list[str], ingredients: list[str], allergies: list[str],
+                                   recipe: int
                                    ) -> list[v.Recipe]:
 
-        paired = self.find_paired_recipe(categories,ingredients,allergies,recipe)
-        if not paired == []:
+        paired = self.find_paired_recipe(categories, ingredients, allergies, recipe)
+        if paired != []:
             return paired
         else:
-            return self.find_similar_recipe(categories,ingredients,allergies,recipe)
+            return self.find_similar_recipe(categories, ingredients, allergies, recipe)
 
-
-    #to be implemented gang
     def find_recommendations(self, categories: list[str], ingredients: list[str],
                              allergies: list[str]) -> list[v.Recipe]:
         """Return a list of the top 3 recipes that best match the given user preferences.
@@ -284,7 +291,7 @@ class RecipeGraph:
 
         # Collect all recipes connected to matching ingredient vertices
         categories_candidates = set()
-        for cat_name in categories_lower: #meow :3
+        for cat_name in categories_lower:  #meow :3
             if cat_name in self.vertices:
                 cat_vertex = self.vertices[cat_name]
                 if isinstance(cat_vertex, v.Category):
@@ -302,12 +309,12 @@ class RecipeGraph:
             recipe_ingredients = {i.get_name().lower() for i in r.get_ingredients()}
             recipe_categories = {c.get_name().lower() for c in r.get_categories()}
 
-            ingredient_score = len(ingredients_lower & recipe_ingredients) * 2
-            category_score = len(categories_lower & recipe_categories) * 3
+            ingredient_score = len(ingredients_lower & recipe_ingredients) * INGREDIENT_SIMILARITY_MULTIPLER
+            category_score = len(categories_lower & recipe_categories) * CATEGORY_SIMILARITY_MULTIPLER
             total = ingredient_score + category_score
 
-            if total > 0:
+            if total > NO_SIMILARITY_SCORE:
                 scores.append((total, r))
 
-        scores.sort(reverse=True, key=lambda x: x[0])
-        return [recipe for _, recipe in scores[:(min(len(scores), 50))]]
+        scores.sort(reverse=True, key=lambda x: x[SIMILARITY_SCORE_INDEX])
+        return [recipe for _, recipe in scores[:(min(len(scores), MAX_RECIPES))]]

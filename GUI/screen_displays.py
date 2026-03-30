@@ -1,6 +1,16 @@
 from __future__ import annotations
+
 import pygame
 from typing import Callable, Optional
+from Processing.app_constants import BUTTON_BORDER_RADIUS, BUTTON_FONT_COLOR, BUTTON_FONT_SIZE, DEFAULT_TEXT_COLOR, \
+    ELLIPSIS_TEXT, EMPTY_TEXT, \
+    LIMIT_REACHED_MESSAGE, NEWLINE_CHARACTER, SPACE_CHARACTER, TEXTBOX_BORDER_WIDTH, \
+    TEXT_BOX_COLOR, \
+    TEXT_BOX_FONT_COLOR, \
+    TEXT_BOX_FONT_SIZE, \
+    TEXT_MAX_LENGTH, \
+    TOP_LEFT_CORNER_COORDINATES, X_DIMENSIONS, \
+    Y_DIMENSIONS, ZERO
 
 FONT_PATH = "GUI/design_features/font/ShadowsIntoLightTwo-Regular.ttf"
 
@@ -28,21 +38,22 @@ class Button:
     _FONT_SIZE: int
 
     def __init__(self, rect: pygame.Rect, text: str, color: tuple[int, int, int],
-                 action: Callable[..., None] | None, top_left_coordinates: tuple[int, int]):
+                 top_left_coordinates: tuple[int, int], action: Optional[Callable[..., None]] = None):
         self.rect = rect
-        self._FONT_SIZE = 25
-        self._FONT_COLOR = (0, 0, 0)
+        self._FONT_SIZE = BUTTON_FONT_SIZE
+        self._FONT_COLOR = BUTTON_FONT_COLOR
         self._font = pygame.font.Font(FONT_PATH, self._FONT_SIZE)
         self.text = text
         self.color = color
-        self.action = action
+        if action:
+            self.action = action
         self.top_left_coordinates = top_left_coordinates
 
     def draw_button(self, surface: pygame.Surface) -> None:
         """Draws Button on given surface."""
 
         self.rect.topleft = self.top_left_coordinates
-        pygame.draw.rect(surface, self.color, self.rect, border_radius=13)
+        pygame.draw.rect(surface, self.color, self.rect, border_radius=BUTTON_BORDER_RADIUS)
         text_surf = self._font.render(self.text, True, self._FONT_COLOR)
         text_rect = text_surf.get_rect(center=self.rect.center)
         surface.blit(text_surf, text_rect)
@@ -74,7 +85,7 @@ class Screen:
            - _default_text: the initial number of Text objects on screen
        """
 
-    screen: pygame.Surface
+    surface: pygame.Surface
     WIDTH: int
     HEIGHT: int
     buttons: list[Button]
@@ -84,21 +95,19 @@ class Screen:
     _image: pygame.Surface
     _default_text: int
 
-    def __init__(self, buttons: list[Button], image_filepath: str, screen: pygame.Surface,
+    def __init__(self, buttons: list[Button], image_filepath: str, surface: pygame.Surface,
                  textboxes: Optional[list[TextBox]] = None, text: Optional[list[Text]] = None):
-        self.screen = screen
-        self.WIDTH = 1000
-        self.HEIGHT = 1000
+        self.surface = surface
         self.buttons = buttons
         self.image_filepath = image_filepath
         self._image = pygame.image.load(self.image_filepath)
-        self._image = pygame.transform.scale(self._image, (self.WIDTH, self.HEIGHT))
+        self._image = pygame.transform.scale(self._image, (X_DIMENSIONS, Y_DIMENSIONS))
         self.textboxes = textboxes
         self.text = text
         if self.text is not None:
             self._default_text = len(self.text)
         else:
-            self._default_text = 0
+            self._default_text = ZERO
 
     def update_all_buttons(self, event: pygame.event.Event) -> None:
         """Checks if any buttons in self were clicked in given event and updates them if clicked."""
@@ -114,15 +123,15 @@ class Screen:
 
     def draw_screen(self) -> None:
         """Draws the screen in pygame with all features (Text, Textbox, Button if any are present)."""
-        self.screen.blit(self._image, (0, 0))
+        self.surface.blit(self._image, TOP_LEFT_CORNER_COORDINATES)
         for button in self.buttons:
-            button.draw_button(self.screen)
+            button.draw_button(self.surface)
         if self.textboxes is not None:
             for textbox in self.textboxes:
-                textbox.draw_textbox(self.screen)
+                textbox.draw_textbox(self.surface)
         if self.text is not None:
             for text in self.text:
-                text.draw_text(self.screen)
+                text.draw_text(self.surface)
         pygame.display.flip()
 
     def refresh_screen(self) -> None:
@@ -130,7 +139,6 @@ class Screen:
         for textbox in self.textboxes:
             textbox.refresh_textbox()
         if self.text is not None:
-            print(self._default_text)
             for _ in range(len(self.text) - self._default_text):
                 text = self.text.pop()
                 text.remove_text()
@@ -191,12 +199,12 @@ class TextBox:
         self.top_left_coordinates = top_left_coordinates
         self.rect.topleft = top_left_coordinates
         self.limit = limit
-        self._FONT_SIZE = 20
-        self._FONT_COLOR = (0, 0, 0)
-        self._TEXTBOX_COLOR = (245, 245, 220)
-        self._TEXTBOX_WIDTH = 45
+        self._FONT_SIZE = TEXT_BOX_FONT_SIZE
+        self._FONT_COLOR = TEXT_BOX_FONT_COLOR
+        self._TEXTBOX_COLOR = TEXT_BOX_COLOR
+        self._TEXTBOX_WIDTH = TEXTBOX_BORDER_WIDTH
         self._FONT = pygame.font.Font(FONT_PATH, self._FONT_SIZE)
-        self.text_inputted = ''
+        self.text_inputted = EMPTY_TEXT
         self._text_active = False
         self.all_text_inputted = []
         self._enabled = True
@@ -211,7 +219,6 @@ class TextBox:
     def handle_textbox_input(self, event: pygame.event.Event) -> None:
         """Updates TextBox if enabled and handles given event. Updates textbox if valid entry and does not exceed max
         length, otherwise does nothing."""
-        MAX_LENGTH = 40
         if self._enabled:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if self.rect.collidepoint(event.pos):
@@ -225,17 +232,17 @@ class TextBox:
                     if process is not None:
                         self._enabled = False
                     self.clear_textbox()
-                elif event.key == pygame.K_SPACE and len(self.text_inputted) < MAX_LENGTH:
+                elif event.key == pygame.K_SPACE and len(self.text_inputted) < TEXT_MAX_LENGTH:
                     self.text_inputted += ' '
                 elif event.key == pygame.K_BACKSPACE:
                     self.text_inputted = self.text_inputted[:-1]
                 else:
-                    if len(self.text_inputted) < MAX_LENGTH:
+                    if len(self.text_inputted) < TEXT_MAX_LENGTH:
                         self.text_inputted += event.unicode
 
     def clear_textbox(self) -> None:
         """Clears the textbox"""
-        self.text_inputted = ''
+        self.text_inputted = EMPTY_TEXT
 
     def refresh_textbox(self) -> None:
         """Refreshes and re-enables textbox."""
@@ -246,10 +253,9 @@ class TextBox:
     def process_final_answer(self, text_inputted: str):
         """Updates final answer """
         if len(self.all_text_inputted) < self.limit:
-            print('if reached')
             self.all_text_inputted.append(text_inputted.lower().strip())
             if len(self.all_text_inputted) == self.limit:
-                return 'Limit Reached'
+                return LIMIT_REACHED_MESSAGE
         return None
 
     def refresh_answers(self):
@@ -278,7 +284,7 @@ class Text:
     def __init__(self, text: str, rect: pygame.rect.Rect, top_left_coordinates: tuple[int, int], size: int):
         self.rect = rect
         self._FONT = pygame.font.Font(FONT_PATH, size)
-        self._FONT_COLOR = (0, 0, 0)
+        self._FONT_COLOR = DEFAULT_TEXT_COLOR
         self.text = text
         self.rect.topleft = top_left_coordinates
 
@@ -292,14 +298,14 @@ class Text:
         line_height = self._FONT.get_height()
         current_y = y
 
-        lines = self.text.split("\n")
+        lines = self.text.split(NEWLINE_CHARACTER)
 
         for line in lines:
-            words = line.split(" ")
-            current_line = ""
+            words = line.split(SPACE_CHARACTER)
+            current_line = EMPTY_TEXT
 
             for word in words:
-                test_line = current_line + (" " if current_line else "") + word
+                test_line = current_line + (SPACE_CHARACTER if current_line else EMPTY_TEXT) + word
                 test_surf = self._FONT.render(test_line, True, self._FONT_COLOR)
 
                 if max_width is None or test_surf.get_width() <= max_width:
@@ -327,9 +333,9 @@ class Text:
 
     def _draw_ellipsis(self, surface: pygame.Surface, x: int, y: int) -> None:
         """Draws '...' at the cutoff point."""
-        ellipsis = self._FONT.render("...", True, self._FONT_COLOR)
+        ellipsis = self._FONT.render(ELLIPSIS_TEXT, True, self._FONT_COLOR)
         surface.blit(ellipsis, (x, y))
 
     def remove_text(self) -> None:
         """Removes text off-screen."""
-        self.text = ''
+        self.text = EMPTY_TEXT

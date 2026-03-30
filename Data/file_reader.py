@@ -8,11 +8,12 @@ data to make it usable for the program
 from __future__ import annotations
 
 import re
+import csv
 
 import pandas as pd
 import pyarrow
 import fastparquet
-import csv
+
 
 UID_INDEX = 0
 NAME_INDEX = 1
@@ -28,6 +29,14 @@ NAME_SIMILARITY_INDEX = 3
 
 ZERO = 0
 ONE = 1
+NEGATIVE_ONE = -1
+
+OPEN_MODE = 'r'
+PARQUET_EXTENSION = '.parquet'
+CSV_EXTENSION = '.csv'
+
+START_BRACKET, CLOSE_BRACKET = '[', ']'
+UNWANTED_VALUES_REGEX = r"'([^']*)'|\"([^\"]*)\""
 
 
 def read_recipes_data(path: str, is_csv: bool) -> list[list]:
@@ -88,7 +97,7 @@ def read_csv(path: str) -> list[list[str]]:
     Preconditions:
         - path is a valid file path to a csv file
     """
-    with open(path, 'r') as file:
+    with open(path, OPEN_MODE) as file:
         reader = csv.reader(file)
         next(reader)
         return list(reader)
@@ -102,7 +111,7 @@ def parquet_to_csv(path: str) -> str:
         - path is a valid file path to a parquet file
     """
     data = pd.read_parquet(path)
-    csv_path = path.replace(".parquet", ".csv")
+    csv_path = path.replace(PARQUET_EXTENSION, CSV_EXTENSION)
     data.to_csv(csv_path, index=False)
     return csv_path
 
@@ -153,13 +162,23 @@ def process_varchar_list(lst: str) -> list[str]:
     value = lst.strip()
 
     # Remove outer brackets
-    if value.startswith("[") and value.endswith("]"):
-        value = value[1:-1]
+    if value.startswith(START_BRACKET) and value.endswith(CLOSE_BRACKET):
+        value = value[ONE:NEGATIVE_ONE]
 
     # Extract quoted values
-    matches = re.findall(r"'([^']*)'|\"([^\"]*)\"", value)
+    matches = re.findall(UNWANTED_VALUES_REGEX, value)
 
     # matches is list of tuples → pick non-empty
     result = [m[ZERO] or m[ONE] for m in matches]
 
     return result
+
+
+if __name__ == "__main__":
+    import python_ta
+
+    python_ta.check_all(config={
+        'extra-imports': ['re', 'pandas', 'pyarrow', 'fastparquet', 'csv'],
+        'allowed-io': ['read_csv'],
+        'max-line-length': 120
+    })

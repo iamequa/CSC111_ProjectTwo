@@ -5,8 +5,8 @@
 This Python module contains code for a recipe tree data structure in our recipe index application.
 """
 from __future__ import annotations
-import Data.vertex as vertex
-import Data.file_reader as file_reader
+from Data import vertex
+from Data import file_reader
 
 UID_INDEX = 0
 NAME_INDEX = 1
@@ -18,6 +18,7 @@ NAME_TOKENS_INDEX = 5
 INGREDIENTS = "i"
 CATEGORIES = "c"
 NAME_TOKENS = "n"
+STARTING_RECIPE_NAME_LENGTH = 0
 
 
 def build_recipe_tree(file_path: str, is_csv: bool) -> RecipeTree:
@@ -100,11 +101,11 @@ class RecipeTree:
     current_filter: str | None
     _max_recipe_name_length: int
 
-    def __init__(self, current_filter: str | None):
+    def __init__(self, current_filter: str | None) -> None:
         self.recipes = {}
         self.filters = {}
         self.current_filter = current_filter
-        self._max_recipe_name_length = 0
+        self._max_recipe_name_length = STARTING_RECIPE_NAME_LENGTH
 
     def add_vertex(self, recipe: vertex.Recipe) -> None:
         """
@@ -138,7 +139,7 @@ class RecipeTree:
         elif self.current_filter == NAME_TOKENS:
             self._add_to_children(recipe.get_name_tokens(), None, recipe)
 
-    def _add_to_children(self, items: set, next_filter: str | None, recipe: vertex.Recipe):
+    def _add_to_children(self, items: set, next_filter: str | None, recipe: vertex.Recipe) -> None:
         """Takes the recipe and recursively fully adds the recipe to every filter it is in"""
         for item in items:
             name = item.get_name()
@@ -147,18 +148,6 @@ class RecipeTree:
             if name not in self.filters:
                 self.filters[name] = RecipeTree(next_filter)
             self.filters[name].add_vertex(recipe)
-
-    def __contains__(self, uid: int) -> bool:
-        return uid in self.recipes
-
-
-    def sort_by_name(self) -> list[vertex.Recipe]:
-        recipe_list = self.recipes.values()
-        return sorted(recipe_list, key=lambda recipe: len(recipe.get_name()))
-
-    def sort_by_ingredient_count(self) -> list[vertex.Recipe]:
-        recipe_list = self.recipes.values()
-        return sorted(recipe_list, key=lambda recipe: len(recipe.get_ingredients()))
 
     def search_by_name(self, name: str | None = None) -> list[vertex.Recipe]:
         """
@@ -194,7 +183,7 @@ class RecipeTree:
         return list(result)
 
     def search_by_filters(self, ingredients: list[str], categories: list[str], name: str | None = None
-) -> list[vertex.Recipe]:
+                          ) -> list[vertex.Recipe]:
         """
            Return a list of recipes that match the given ingredient, category, and optional name filters.
 
@@ -217,7 +206,7 @@ class RecipeTree:
         categories_set = set(categories)
 
         if name is None:
-            candidates = self.recipes.values()
+            candidates = list(self.recipes.values())
         else:
             candidates = self.search_by_name(name)
 
@@ -228,3 +217,13 @@ class RecipeTree:
             if ingredients_set.issubset(ingredient_names) and categories_set.issubset(category_names):
                 results.append(recipe)
         return results
+
+
+if __name__ == "__main__":
+    import python_ta
+
+    python_ta.check_all(config={
+        'extra-imports': ['annotations', 'Data.vertex', 'Data.file_reader'],
+        'allowed-io': [],
+        'max-line-length': 120
+    })

@@ -28,9 +28,6 @@ class Vertex:
         """Return the name of this vertex"""
         return self._name
 
-    def get_recipes(self):
-        pass
-
 
 class Recipe(Vertex):
     """
@@ -44,13 +41,14 @@ class Recipe(Vertex):
     """
     # Private Instance Attributes:
     #   - _uid: the unique ID of this recipe
+    #   - _steps: the steps needed to prepare this recipe
     #   - _categories: the categories which this recipe is a part of
     #   - _ingredients: the ingredients contained within this recipe
     #   - _name_tokens: any additional information about the recipe
     #   - _paired_recipes: a mapping of categories and recipes which satisfy those categories
 
-    _UID: int
-    _STEPS: str
+    _uid: int
+    _steps: str
     _categories: set[Category]
     _ingredients: set[Ingredient]
     _name_tokens: set[NameToken]
@@ -58,15 +56,15 @@ class Recipe(Vertex):
 
     def __init__(self, name: str, uid: int, steps: str) -> None:
         super().__init__(name)
-        self._UID = uid
-        self._STEPS = steps
+        self._uid = uid
+        self._steps = steps
         self._categories, self._ingredients, self._name_tokens, self._paired_recipes = set(), set(), set(), {}
 
     # NOTE: For every getter, do NOT use it in a manner such recipe.get_categories.add(category),
     # use recipe.add_category(category)
     def get_id(self) -> int:
         """Returns the ID of this recipe"""
-        return self._UID
+        return self._uid
 
     def get_categories(self) -> set[Category]:
         """Returns the categories this recipe is a part of"""
@@ -81,7 +79,8 @@ class Recipe(Vertex):
         return self._name_tokens
 
     def get_steps(self) -> str:
-        return self._STEPS
+        """Return the steps needed to make this recipe"""
+        return self._steps
 
     def get_paired_recipes(self) -> dict[Category, set[Recipe]]:
         """Returns all the paired recipes and replacements for this recipe"""
@@ -123,6 +122,7 @@ class Recipe(Vertex):
             self._paired_recipes[category] = set()
         self._paired_recipes[category].add(recipe)
 
+
 class Attribute(Vertex):
     """
     Represents a non-recipe vertex within a recipe graph.
@@ -142,6 +142,7 @@ class Attribute(Vertex):
         return len(self._recipes)
 
     def get_recipes(self) -> set[Recipe]:
+        """Get all the recipes connected to this attribute"""
         return self._recipes
 
     # NOTE: Do NOT call this method directly outside of this file, creation of the graph will handle the
@@ -161,3 +162,13 @@ class Ingredient(Attribute):
 
 class NameToken(Attribute):
     """A name token vertex, same as attribute but made for design purposes"""
+
+
+if __name__ == "__main__":
+    import python_ta
+
+    python_ta.check_all(config={
+        'extra-imports': [],
+        'allowed-io': [],
+        'max-line-length': 120
+    })

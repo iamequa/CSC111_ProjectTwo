@@ -306,13 +306,3 @@ class RecipeGraph:
         # Check how many of the categories wanted are in the recipes categories, and weight it
         category_score = len(categories & recipe_categories) * CATEGORY_SIMILARITY_WEIGHT
         return ingredient_score + category_score
-
-
-if __name__ == "__main__":
-    import python_ta
-
-    python_ta.check_all(config={
-        'extra-imports': ['annotations', 'Data.vertex'],
-        'allowed-io': [],
-        'max-line-length': 120
-    })

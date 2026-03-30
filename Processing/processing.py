@@ -1,3 +1,12 @@
+"""CSC111 Project 2: The Ultimate Recipe Index - Processing
+
+===============================
+
+This Python module contains code for a middle-man class between the Data and GUI package. This is meant to connect
+the two and is the core functionality of the project, making the GUI package a "means" of the user to talk to the
+processing, with the Data package being the brains of the processor.
+"""
+
 import pygame
 
 import GUI.screen_displays as gui
@@ -10,101 +19,108 @@ ERROR_MESSAGE = "Either you have not pressed submit or we have found no recipes,
 
 
 def list_to_str(lst: list[str]) -> str:
+    """Turn a list of strings into a single string spaced out by commas"""
     return ", ".join(lst)
 
 
 class MainMenuProcessor:
     """Handles logic for the main menu screen.
     Instance Attributes:
-        - organizer:
-        - search_screen:
-        - algorithm_screen:
-        - main_screen:
+        - organizer: Manages the screen and allows for switching between different screens
+        - search_screen: The screen corresponding to the search screen in our app
+        - survey_screen: The screen corresponding to the survey screen in our app
+        - main_menu_screen: The screen corresponding to the main menu screen in our app
     """
     organizer: gui.ScreenOrganizer
     search_screen: gui.Screen
-    algorithm_screen: gui.Screen
-    main_screen: gui.Screen
+    survey_screen: gui.Screen
+    main_menu_screen: gui.Screen
 
-    def __init__(self, organizer: gui.ScreenOrganizer, search_screen: gui.Screen, algorithm_screen: gui.Screen,
+    def __init__(self, organizer: gui.ScreenOrganizer, search_screen: gui.Screen, survey_screen: gui.Screen,
                  main_screen: gui.Screen) -> None:
         self.organizer = organizer
         self.search_screen = search_screen
-        self.algorithm_screen = algorithm_screen
-        self.main_screen = main_screen
+        self.survey_screen = survey_screen
+        self.main_menu_screen = main_screen
 
     def go_to_search(self) -> None:
+        """Switches the screen from the main menu screen to the search screen"""
         self.organizer.switch_screens(self.search_screen)
 
     def go_to_survey(self) -> None:
-        self.organizer.switch_screens(self.algorithm_screen)
+        """Switches the screen from the main menu screen to the survey screen"""
+        self.organizer.switch_screens(self.survey_screen)
 
-    def exit_app(self) -> None:
+    @staticmethod
+    def exit_app() -> None:
+        """Safely exits the app"""
         from pygame import quit
         quit()
         exit()
 
 
-class AlgorithmProcessor:
-    """The processor for the algorithm Screen in app.py
+class SurveyProcessor:
+    """The processor for the survey screen in app.py
     Instance Attributes:
         - organizer:
-        - algorithm_screen:
+        - survey_screen:
         - main_screen:
-    Private Instance Attributes (Note: you dont have to make it private if u dont agree but I added here in case):
+    Private Instance Attributes:
+        - _data: the recipe graph which contains
         - _current_recipes:
         - _current_index:
-        - _data:
         """
     organizer: gui.ScreenOrganizer
-    algorithm_screen: gui.Screen
-    main_screen: gui.Screen
-    data: RecipeGraph
+    survey_screen: gui.Screen
+    main_menu_screen: gui.Screen
+    _data: RecipeGraph
     _current_recipes: list[Recipe]
     _current_index: int
 
-    def __init__(self, organizer: gui.ScreenOrganizer, algorithm_screen: gui.Screen, main_screen: gui.Screen,
+    def __init__(self, organizer: gui.ScreenOrganizer, survey_screen: gui.Screen, main_menu_screen: gui.Screen,
                  data: RecipeGraph) -> None:
-
         self.organizer = organizer
-        self.algorithm_screen = algorithm_screen
-        self.main_screen = main_screen
-        self.data = data
+        self.survey_screen = survey_screen
+        self.main_menu_screen = main_menu_screen
+        self._data = data
         self.current_recipes = []
         self.current_index = START_INDEX
 
     def go_to_main_menu(self) -> None:
-        self.algorithm_screen.refresh_screen()
-        self.organizer.switch_screens(self.main_screen)
+        """Switch back to the main meny and reset the current processor"""
+        self.survey_screen.refresh_screen()
+        self.organizer.switch_screens(self.main_menu_screen)
         self.current_recipes, self.current_index = [], START_INDEX
 
     def give_recommendation(self) -> None:
-        inputs = self.algorithm_screen.get_textbox_inputs()
+        """Based on the user input, give recommendations according to the algorithms implemented in the recipe graph"""
+        inputs = self.survey_screen.get_textbox_inputs()
         dietary, ingredients, allergies, recipe_name = (inputs[AS_DIETARY_INDEX], inputs[AS_INGREDIENTS_INDEX],
                                                         inputs[AS_ALLERGIES_INDEX], inputs[AS_RECIPE_NAME_INDEX])
 
-        self.algorithm_screen.refresh_screen()
+        self.survey_screen.refresh_screen()
         if (len(inputs[AS_DIETARY_INDEX]) == len(inputs[AS_INGREDIENTS_INDEX]) ==
-                len(inputs[AS_ALLERGIES_INDEX]) == NO_INPUT):
+                len(inputs[AS_ALLERGIES_INDEX]) == 0):
             self._display_error(NO_FILTER_ERROR)
             return
-        self.algorithm_screen.refresh_screen()
+        self.survey_screen.refresh_screen()
         self.current_index = START_INDEX
 
         if not recipe_name:
-            self.current_recipes = self.data.find_recommendations(dietary, ingredients, allergies)
+            self.current_recipes = self._data.find_recommendations(dietary, ingredients, allergies)
         else:
             recipe_name = recipe_name[START_INDEX].lower().strip()
-            if recipe_name not in self.data.recipe_name_to_id:
+            if recipe_name not in self._data.recipe_name_to_id:
                 self._display_error(RECIPE_NOT_FOUND_ERROR)
                 return
-            recipe_id = self.data.recipe_name_to_id[recipe_name]
-            self.current_recipes = self.data.compute_alternative_recipe(dietary, ingredients, allergies, recipe_id)
+            recipe_id = self._data.recipe_name_to_id[recipe_name]
+            self.current_recipes = self._data.compute_alternative_recipe(dietary, ingredients, allergies, recipe_id)
         self.print_alternatives()
 
     def print_alternatives(self) -> None:
-        if self.algorithm_screen.text is None:
-            self.algorithm_screen.text = []
+        """Display all the alternatives that the program found. Can scroll through."""
+        if self.survey_screen.text is None:
+            self.survey_screen.text = []
 
         if not self.current_recipes:
             self._display_error(NO_ALTERNATIVES_ERROR)
@@ -113,8 +129,9 @@ class AlgorithmProcessor:
         self.make_alternatives()
 
     def _display_error(self, error: str) -> None:
-        if self.algorithm_screen.text is None:
-            self.algorithm_screen.text = []
+        """Display an error message"""
+        if self.survey_screen.text is None:
+            self.survey_screen.text = []
 
         error_text = gui.Text(
             error,
@@ -122,29 +139,38 @@ class AlgorithmProcessor:
             AS_ERROR_TOP_LEFT,
             AS_ERROR_FONT_SIZE
         )
-        self.algorithm_screen.text.append(error_text)
+        self.survey_screen.text.append(error_text)
 
     def go_right(self) -> None:
-        self.algorithm_screen.refresh_screen()
+        """
+        Switch from the recipe at the current index to the recipe at the next index in current_recipes. Do not switch
+        if reached the end of the recipes list
+        """
+        self.survey_screen.refresh_screen()
         if self.current_recipes == [] and self.current_index == START_INDEX:
             self._display_error(ERROR_MESSAGE)
-        elif len(self.current_recipes) - ONE <= self.current_index:
+        elif len(self.current_recipes) - 1 <= self.current_index:
             self.make_alternatives()
         else:
-            self.current_index += ONE
+            self.current_index += 1
             self.make_alternatives()
 
     def go_left(self) -> None:
-        self.algorithm_screen.refresh_screen()
+        """
+        Switch from the recipe at the current index to the recipe at the previous index in current_recipes. Do not
+        switch if at the beginning of the recipes list
+        """
+        self.survey_screen.refresh_screen()
         if self.current_recipes == [] and self.current_index == START_INDEX:
             self._display_error(ERROR_MESSAGE)
         elif self.current_index <= START_INDEX:
             self.make_alternatives()
         else:
-            self.current_index -= ONE
+            self.current_index -= 1
             self.make_alternatives()
 
     def make_alternatives(self) -> None:  # change the name
+        """Compute the best alternatives based on the user's input."""
         current_recipe = self.current_recipes[self.current_index]
         recipe_name, recipe_ingredients, recipe_categories = (current_recipe.get_name(),
                                                               current_recipe.get_ingredients(),
@@ -159,7 +185,7 @@ class AlgorithmProcessor:
                                                    AS_RECIPE_RECT_W, AS_RECIPE_RECT_H),
                                        AS_ERROR_TOP_LEFT,
                                        AS_RECIPE_FONT_SIZE)
-        self.algorithm_screen.text.append(current_recipe_text)
+        self.survey_screen.text.append(current_recipe_text)
 
 
 class SearchProcessor:
@@ -167,7 +193,7 @@ class SearchProcessor:
     Instance Attributes:
         - organizer: the ScreenOrganizer in app.py
         - search_screen: the search Screen in app.py
-        - main_screen: the main Screen in app.py
+        - main_menu_screen: the main Screen in app.py
     Private Instance Attributes:
         - _data: the RecipeTree with all the recipes
         - _current_recipes: a list of Recipes returned from searching
@@ -175,16 +201,16 @@ class SearchProcessor:
     """
     organizer: gui.ScreenOrganizer
     search_screen: gui.Screen
-    main_screen: gui.Screen
+    main_menu_screen: gui.Screen
     _data: RecipeTree
     _current_recipes: list[Recipe]
     _current_index: int
 
-    def __init__(self, organizer: gui.ScreenOrganizer, search_screen: gui.Screen, main_screen: gui.Screen,
+    def __init__(self, organizer: gui.ScreenOrganizer, search_screen: gui.Screen, main_menu_screen: gui.Screen,
                  data: RecipeTree) -> None:
         self.organizer = organizer
         self.search_screen = search_screen
-        self.main_screen = main_screen
+        self.main_menu_screen = main_menu_screen
         self._data = data
         self._current_recipes = []
         self._current_index = START_INDEX
@@ -192,7 +218,7 @@ class SearchProcessor:
     def go_to_main_menu(self) -> None:
         """Changes the current screen in organizer to the main menu."""
         self.search_screen.refresh_screen()
-        self.organizer.switch_screens(self.main_screen)
+        self.organizer.switch_screens(self.main_menu_screen)
         self._current_recipes, self._current_index = [], START_INDEX
 
     def _display_error(self, error: str) -> None:
@@ -234,7 +260,7 @@ class SearchProcessor:
         elif len(self._current_recipes) - 1 <= self._current_index:
             self.show_alternatives()
         else:
-            self._current_index += ONE
+            self._current_index += 1
             self.show_alternatives()
 
     def go_left(self) -> None:
@@ -245,7 +271,7 @@ class SearchProcessor:
         elif self._current_index <= START_INDEX:
             self.show_alternatives()
         else:
-            self._current_index -= ONE
+            self._current_index -= 1
             self.show_alternatives()
 
     def print_search_results(self, search_results: list[Recipe]) -> None:
@@ -271,6 +297,6 @@ class SearchProcessor:
                                        INGREDIENTS_LABEL + list_to_str(recipe_ingredients) +
                                        CATEGORIES_LABEL + list_to_str(recipe_categories),
                                        pygame.Rect(SI_RECIPE_RECT_X, SI_RECIPE_RECT_Y,
-                                                   SI_RECIPE_RECT_W, SI_RECIPE_RECT_H)
-                                       , SI_ERROR_TOP_LEFT, SI_ERROR_FONT_SIZE)
+                                                   SI_RECIPE_RECT_W, SI_RECIPE_RECT_H),
+                                       SI_ERROR_TOP_LEFT, SI_ERROR_FONT_SIZE)
         self.search_screen.text.append(current_recipe_text)

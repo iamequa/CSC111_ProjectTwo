@@ -162,13 +162,3 @@ class Ingredient(Attribute):
 
 class NameToken(Attribute):
     """A name token vertex, same as attribute but made for design purposes"""
-
-
-if __name__ == "__main__":
-    import python_ta
-
-    python_ta.check_all(config={
-        'extra-imports': ['annotations'],
-        'allowed-io': [],
-        'max-line-length': 120
-    })

@@ -165,13 +165,3 @@ def process_varchar_list(lst: str) -> list[str]:
     result = [(m[0] or m[1]).replace("_", " ") for m in matches]
 
     return result
-
-
-if __name__ == "__main__":
-    import python_ta
-
-    python_ta.check_all(config={
-        'extra-imports': ['re', 'pandas', 'pyarrow', 'fastparquet', 'csv'],
-        'allowed-io': ['read_csv'],
-        'max-line-length': 120
-    })

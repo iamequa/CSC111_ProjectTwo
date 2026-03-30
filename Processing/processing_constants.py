@@ -1,3 +1,10 @@
+"""CSC111 Project 2: The Ultimate Recipe Index - Processing Constants
+
+===============================
+
+This Python module contains constants for the processing class in our recipe index app.
+"""
+
 # -------------------- STRINGS --------------------
 
 ERROR_MESSAGE = "Either you have not pressed submit or we have found no recipes, sorry!"
@@ -64,8 +71,3 @@ SI_INGREDIENTS_INDEX = 0
 SI_CATEGORIES_INDEX = 1
 SI_RECIPE_NAME_INDEX = 2
 SI_RECIPE_FIRST_INPUT_INDEX = 0
-
-# -------------------- EMPTY CHECK --------------------
-
-NO_INPUT = 0
-ONE = 1

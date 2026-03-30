@@ -170,13 +170,3 @@ class RecipeTree:
                 results.append(recipe)
 
         return results
-
-
-if __name__ == "__main__":
-    import python_ta
-
-    python_ta.check_all(config={
-        'extra-imports': ['annotations', 'Data.vertex'],
-        'allowed-io': [],
-        'max-line-length': 120
-    })

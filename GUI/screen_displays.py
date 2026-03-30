@@ -11,13 +11,13 @@ from typing import Callable, Optional
 import pygame
 from Processing.app_constants import BUTTON_BORDER_RADIUS, BUTTON_FONT_COLOR, BUTTON_FONT_SIZE, DEFAULT_TEXT_COLOR, \
     ELLIPSIS_TEXT, EMPTY_TEXT, \
-    FONT_PATH, LIMIT_REACHED_MESSAGE, NEWLINE_CHARACTER, SPACE_CHARACTER, TEXT_BOX_BORDER_WIDTH, \
-    TEXT_BOX_COLOR, \
-    TEXT_BOX_FONT_COLOR, \
-    TEXT_BOX_FONT_SIZE, \
-    TEXT_MAX_LENGTH, \
+    FONT_PATH, LIMIT_REACHED_MESSAGE, NEWLINE_CHARACTER, SPACE_CHARACTER, TEXTBOX_BORDER_WIDTH, \
+    TEXTBOX_COLOR, \
+    TEXTBOX_FONT_COLOR, \
+    TEXTBOX_FONT_SIZE, \
+    TEXTBOX_MAX_LENGTH, \
     TOP_LEFT_CORNER_COORDINATES, X_DIMENSIONS, \
-    Y_DIMENSIONS, ZERO
+    Y_DIMENSIONS
 
 
 class Button:
@@ -108,7 +108,7 @@ class Screen:
         if self.text:
             self._default_text = len(self.text)
         else:
-            self._default_text = ZERO
+            self._default_text = 0
 
     def update_all_buttons(self, event: pygame.event.Event) -> None:
         """Checks if any buttons in self were clicked in given event and updates them if clicked."""
@@ -193,7 +193,7 @@ class TextBox:
         self.top_left_coordinates = top_left_coordinates
         self.rect.topleft = top_left_coordinates
         self.limit = limit
-        self._font = pygame.font.Font(FONT_PATH, TEXT_BOX_FONT_SIZE)
+        self._font = pygame.font.Font(FONT_PATH, TEXTBOX_FONT_SIZE)
         self.text_inputted = EMPTY_TEXT
         self._text_active = False
         self.all_text_inputted = []
@@ -201,9 +201,9 @@ class TextBox:
 
     def draw_textbox(self, surface: pygame.Surface) -> None:
         """Draws textbox on given surface."""
-        text_surf = self._font.render(self.text_inputted, True, TEXT_BOX_FONT_COLOR)
+        text_surf = self._font.render(self.text_inputted, True, TEXTBOX_FONT_COLOR)
         text_rect = text_surf.get_rect(center=self.rect.center)
-        pygame.draw.rect(surface, TEXT_BOX_COLOR, self.rect, TEXT_BOX_BORDER_WIDTH)
+        pygame.draw.rect(surface, TEXTBOX_COLOR, self.rect, TEXTBOX_BORDER_WIDTH)
         surface.blit(text_surf, text_rect)
 
     def handle_textbox_input(self, event: pygame.event.Event) -> None:
@@ -230,7 +230,7 @@ class TextBox:
             self.text_inputted = self.text_inputted[:-1]
             return
 
-        if len(self.text_inputted) >= TEXT_MAX_LENGTH:
+        if len(self.text_inputted) >= TEXTBOX_MAX_LENGTH:
             return
 
         if event.key == pygame.K_SPACE:
@@ -360,4 +360,3 @@ class Text:
     def remove_text(self) -> None:
         """Removes text off-screen."""
         self.display_text = EMPTY_TEXT
-

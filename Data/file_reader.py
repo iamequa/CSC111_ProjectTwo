@@ -5,6 +5,7 @@
 This Python module contains code meant to read from parquet files and CSV files, then clean the
 data to make it usable for the program
 """
+
 from __future__ import annotations
 
 import re
@@ -26,10 +27,6 @@ BASE_INDEX = 0
 TARGET_INDEX = 1
 NAME_OVERLAP_INDEX = 2
 NAME_SIMILARITY_INDEX = 3
-
-ZERO = 0
-ONE = 1
-NEGATIVE_ONE = -1
 
 OPEN_MODE = 'r'
 PARQUET_EXTENSION = '.parquet'
@@ -161,15 +158,11 @@ def process_varchar_list(lst: str) -> list[str]:
 
     value = lst.strip()
 
-    # Remove outer brackets
     if value.startswith(START_BRACKET) and value.endswith(CLOSE_BRACKET):
-        value = value[ONE:NEGATIVE_ONE]
+        value = value[1:-1]
 
-    # Extract quoted values
     matches = re.findall(UNWANTED_VALUES_REGEX, value)
-
-    # matches is list of tuples → pick non-empty
-    result = [m[ZERO] or m[ONE] for m in matches]
+    result = [(m[0] or m[1]).replace("_", " ") for m in matches]
 
     return result
 

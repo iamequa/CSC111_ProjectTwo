@@ -5,11 +5,8 @@ import GUI.screen_displays as screen_displays
 import Processing.processing as processing
 import Data.file_reader as file_reader
 from Data import vertex
-from Data.recipe_graph import BASE_INDEX, CATEGORIES_INDEX, INGREDIENTS_INDEX, NAME_INDEX, NAME_TOKENS_INDEX, \
-    RecipeGraph, STEPS_INDEX, \
-    TARGET_INDEX, \
-    UID_INDEX
-from Data.recipe_tree import NAME_TOKENS, RecipeTree
+from Data.recipe_graph import RecipeGraph
+from Data.recipe_tree import NAME_TOKENS,RecipeTree
 from Processing.app_constants import *
 
 

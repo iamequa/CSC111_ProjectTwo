@@ -217,7 +217,7 @@ class SearchProcessor:
         if not recipe_filter:
             recipe_filter = EMPTY_STR
         else:
-            recipe_filter = recipe_filter[SI_RECIPE_NAME_INDEX]
+            recipe_filter = recipe_filter[SI_RECIPE_FIRST_INPUT_INDEX]
 
         self.search_screen.refresh_screen()
 

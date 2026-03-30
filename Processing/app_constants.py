@@ -30,8 +30,8 @@ CAPTION = 'The Ultimate Recipe Index >:)'
 X_DIMENSIONS, Y_DIMENSIONS = int(1000 * PROGRAM_SCALE), int(800 * PROGRAM_SCALE)
 
 MAIN_MENU_IMAGE_FILE_PATH = "GUI/design_features/backgrounds/title.png"
-ALGORITHM_IMAGE_FILE_PATH = "GUI/design_features/backgrounds/background.png"
-SEARCH_IMAGE_FILE_PATH = "GUI/design_features/backgrounds/background.png"
+ALGORITHM_IMAGE_FILE_PATH = "GUI/design_features/backgrounds/background_algorithm.png"
+SEARCH_IMAGE_FILE_PATH = "GUI/design_features/backgrounds/background_search.png"
 
 TITLE_FONT = int(50 * PROGRAM_SCALE)
 CAPTION_FONT = int(25 * PROGRAM_SCALE)
@@ -242,10 +242,10 @@ SI_TEXT3_RECT_Y = int(500 * PROGRAM_SCALE)
 SI_TEXT3_RECT_W = int(450 * PROGRAM_SCALE)
 SI_TEXT3_RECT_H = int(60 * PROGRAM_SCALE)
 SI_TEXT3_TOP_LEFT = (
-    int(10 * PROGRAM_SCALE),
-    int(125 * PROGRAM_SCALE)
+    int(50 * PROGRAM_SCALE),
+    int(150 * PROGRAM_SCALE)
 )
-SI_FILTER3_TEXT = 'Results:'
+SI_FILTER3_TEXT = 'Results (max 50 recipes):'
 
 # Algorithm Textboxes
 AS_TB1_RECT_X = int(500 * PROGRAM_SCALE)

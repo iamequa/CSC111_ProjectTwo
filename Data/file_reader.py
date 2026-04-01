@@ -15,7 +15,6 @@ import pandas as pd
 import pyarrow
 import fastparquet
 
-
 UID_INDEX = 0
 NAME_INDEX = 1
 STEPS_INDEX = 2
@@ -94,7 +93,7 @@ def read_csv(path: str) -> list[list[str]]:
     Preconditions:
         - path is a valid file path to a csv file
     """
-    with open(path, OPEN_MODE) as file:
+    with open(path, OPEN_MODE, encoding='utf-8') as file:
         reader = csv.reader(file)
         next(reader)
         return list(reader)

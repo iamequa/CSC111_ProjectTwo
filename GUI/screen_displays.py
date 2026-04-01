@@ -147,6 +147,8 @@ class Screen:
 
     def get_textbox_inputs(self) -> list[list[str]]:
         """Returns all the text inputted in Textbox"""
+        if self.textboxes is None:
+            return []
         return [textbox.all_text_inputted for textbox in self.textboxes]
 
 

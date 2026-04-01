@@ -7,6 +7,8 @@ the two and is the core functionality of the project, making the GUI package a "
 processing, with the Data package being the brains of the processor.
 """
 
+import sys
+
 import pygame
 
 import GUI.screen_displays as gui
@@ -54,9 +56,8 @@ class MainMenuProcessor:
     @staticmethod
     def exit_app() -> None:
         """Safely exits the app"""
-        from pygame import quit
-        quit()
-        exit()
+        pygame.quit()
+        sys.exit()
 
 
 class SurveyProcessor:
@@ -83,14 +84,14 @@ class SurveyProcessor:
         self.survey_screen = survey_screen
         self.main_menu_screen = main_menu_screen
         self._data = data
-        self.current_recipes = []
-        self.current_index = START_INDEX
+        self._current_recipes = []
+        self._current_index = START_INDEX
 
     def go_to_main_menu(self) -> None:
         """Switch back to the main meny and reset the current processor"""
         self.survey_screen.refresh_screen()
         self.organizer.switch_screens(self.main_menu_screen)
-        self.current_recipes, self.current_index = [], START_INDEX
+        self._current_recipes, self._current_index = [], START_INDEX
 
     def give_recommendation(self) -> None:
         """Based on the user input, give recommendations according to the algorithms implemented in the recipe graph"""
@@ -104,17 +105,17 @@ class SurveyProcessor:
             self._display_error(NO_FILTER_ERROR)
             return
         self.survey_screen.refresh_screen()
-        self.current_index = START_INDEX
+        self._current_index = START_INDEX
 
         if not recipe_name:
-            self.current_recipes = self._data.find_recommendations(dietary, ingredients, allergies)
+            self._current_recipes = self._data.find_recommendations(dietary, ingredients, allergies)
         else:
             recipe_name = recipe_name[START_INDEX].lower().strip()
             if recipe_name not in self._data.recipe_name_to_id:
                 self._display_error(RECIPE_NOT_FOUND_ERROR)
                 return
             recipe_id = self._data.recipe_name_to_id[recipe_name]
-            self.current_recipes = self._data.compute_alternative_recipe(dietary, ingredients, allergies, recipe_id)
+            self._current_recipes = self._data.compute_alternative_recipe(dietary, ingredients, allergies, recipe_id)
         self.print_alternatives()
 
     def print_alternatives(self) -> None:
@@ -122,7 +123,7 @@ class SurveyProcessor:
         if self.survey_screen.text is None:
             self.survey_screen.text = []
 
-        if not self.current_recipes:
+        if not self._current_recipes:
             self._display_error(NO_ALTERNATIVES_ERROR)
             return
 
@@ -147,12 +148,12 @@ class SurveyProcessor:
         if reached the end of the recipes list
         """
         self.survey_screen.refresh_screen()
-        if self.current_recipes == [] and self.current_index == START_INDEX:
+        if self._current_recipes == [] and self._current_index == START_INDEX:
             self._display_error(ERROR_MESSAGE)
-        elif len(self.current_recipes) - 1 <= self.current_index:
+        elif len(self._current_recipes) - 1 <= self._current_index:
             self.make_alternatives()
         else:
-            self.current_index += 1
+            self._current_index += 1
             self.make_alternatives()
 
     def go_left(self) -> None:
@@ -161,17 +162,17 @@ class SurveyProcessor:
         switch if at the beginning of the recipes list
         """
         self.survey_screen.refresh_screen()
-        if self.current_recipes == [] and self.current_index == START_INDEX:
+        if self._current_recipes == [] and self._current_index == START_INDEX:
             self._display_error(ERROR_MESSAGE)
-        elif self.current_index <= START_INDEX:
+        elif self._current_index <= START_INDEX:
             self.make_alternatives()
         else:
-            self.current_index -= 1
+            self._current_index -= 1
             self.make_alternatives()
 
     def make_alternatives(self) -> None:  # change the name
         """Compute the best alternatives based on the user's input."""
-        current_recipe = self.current_recipes[self.current_index]
+        current_recipe = self._current_recipes[self._current_index]
         recipe_name, recipe_ingredients, recipe_categories = (current_recipe.get_name(),
                                                               current_recipe.get_ingredients(),
                                                               current_recipe.get_categories())
@@ -183,7 +184,7 @@ class SurveyProcessor:
                                        CATEGORIES_LABEL + list_to_str(recipe_categories),
                                        pygame.Rect(AS_RECIPE_RECT_X, AS_RECIPE_RECT_Y,
                                                    AS_RECIPE_RECT_W, AS_RECIPE_RECT_H),
-                                       AS_ERROR_TOP_LEFT,
+                                       AS_RECIPE_TOP_LEFT,
                                        AS_RECIPE_FONT_SIZE)
         self.survey_screen.text.append(current_recipe_text)
 
@@ -241,7 +242,7 @@ class SearchProcessor:
                                                   inputs[SI_RECIPE_NAME_INDEX])
 
         if not recipe_filter:
-            recipe_filter = EMPTY_STR
+            recipe_filter = None
         else:
             recipe_filter = recipe_filter[SI_RECIPE_FIRST_INPUT_INDEX]
 
@@ -298,5 +299,5 @@ class SearchProcessor:
                                        CATEGORIES_LABEL + list_to_str(recipe_categories),
                                        pygame.Rect(SI_RECIPE_RECT_X, SI_RECIPE_RECT_Y,
                                                    SI_RECIPE_RECT_W, SI_RECIPE_RECT_H),
-                                       SI_ERROR_TOP_LEFT, SI_ERROR_FONT_SIZE)
+                                       (SI_RECIPE_TOP_LEFT_X, SI_RECIPE_TOP_LEFT_Y), SI_RECIPE_FONT_SIZE)
         self.search_screen.text.append(current_recipe_text)

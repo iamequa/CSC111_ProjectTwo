@@ -358,23 +358,23 @@ class App:
             text=search_screen_text
         )
 
-        current_screen = screen_displays.ScreenOrganizer(main_menu_screen)
+        self.current_screen = screen_displays.ScreenOrganizer(main_menu_screen)
         main_menu_processor = processing.MainMenuProcessor(
-            current_screen,
+            self.current_screen,
             search_screen,
             survey_screen,
             main_menu_screen
         )
 
         survey_screen_processor = processing.SurveyProcessor(
-            current_screen,
+            self.current_screen,
             survey_screen,
             main_menu_screen,
             self.recipe_graph
         )
 
         search_screen_processor = processing.SearchProcessor(
-            current_screen,
+            self.current_screen,
             search_screen,
             main_menu_screen,
             self.recipe_tree

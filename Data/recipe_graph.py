@@ -92,9 +92,15 @@ class RecipeGraph:
         categories_candidates = self._collect_recipes_from_vertices(categories_lower, v.Category)
         allergen_recipes = self._collect_recipes_from_vertices(allergies_lower, v.Ingredient)
 
+
+        positive_candidates = ingredient_candidates | categories_candidates
+        if not positive_candidates and allergies_lower:
+            positive_candidates = {vertex for vertex in self.vertices.values()
+                                   if isinstance(vertex, v.Recipe)}
+
         # Keep only recipes which have at least one ingredient or category from the user's preferences
         # which do not contain any of the user's allergies
-        candidates = (ingredient_candidates | categories_candidates) - allergen_recipes
+        candidates = positive_candidates - allergen_recipes
         scores = []
         for recipe in candidates:
             # Calculate how good of a recommendation every candidate is to the desired recipe and then

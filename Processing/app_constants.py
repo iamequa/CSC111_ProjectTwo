@@ -1,0 +1,387 @@
+"""CSC111 Project 2: The Ultimate Recipe Index - App Constants
+
+===============================
+
+This Python module contains constants used in our application instantiation.
+"""
+
+# ==================== DATA FILE PATHS ====================
+
+RECIPES_CSV_PATH = "Data/Datasets/recipes-1.csv"
+IS_RECIPE_CSV = True
+
+PAIRS_CSV_PATH = "Data/Datasets/pairs-1.csv"
+IS_PAIRS_CSV = True
+
+
+# ==================== FILE COLUMN INDICES ====================
+
+# Recipe file row layout
+UID_INDEX = 0
+NAME_INDEX = 1
+STEPS_INDEX = 2
+INGREDIENTS_INDEX = 3
+CATEGORIES_INDEX = 4
+NAME_TOKENS_INDEX = 5
+
+# Recipe-pairs file row layout
+BASE_INDEX = 0
+TARGET_INDEX = 1
+NAME_OVERLAP_INDEX = 2
+NAME_SIMILARITY_INDEX = 3
+
+
+# ==================== GLOBAL DISPLAY / TEXT CONSTANTS ====================
+
+PROGRAM_SCALE = 1.0
+
+FONT_PATH = "GUI/design_features/font/ShadowsIntoLightTwo-Regular.ttf"
+
+EMPTY_TEXT = ""
+SPACE_CHARACTER = " "
+NEWLINE_CHARACTER = "\n"
+ELLIPSIS_TEXT = "..."
+LIMIT_REACHED_MESSAGE = "Limit Reached"
+
+TOP_LEFT_CORNER_COORDINATES = (0, 0)
+
+
+# ==================== COLOURS ====================
+
+BUTTON_COLOR = (148, 124, 92)
+SUBMIT_COLOR = (138, 154, 91)
+TEXTBOX_COLOR = (245, 245, 220)
+
+BUTTON_FONT_COLOR = (0, 0, 0)
+TEXTBOX_FONT_COLOR = (0, 0, 0)
+DEFAULT_TEXT_COLOR = (0, 0, 0)
+
+
+# ==================== DIMENSIONS / FONT SIZES ====================
+
+X_DIMENSIONS = int(1000 * PROGRAM_SCALE)
+Y_DIMENSIONS = int(800 * PROGRAM_SCALE)
+
+TITLE_FONT = int(50 * PROGRAM_SCALE)
+CAPTION_FONT = int(25 * PROGRAM_SCALE)
+FONT_SIZE = int(20 * PROGRAM_SCALE)
+BUTTON_FONT_SIZE = int(25 * PROGRAM_SCALE)
+TEXTBOX_FONT_SIZE = int(18 * PROGRAM_SCALE)
+
+TEXTBOX_BORDER_WIDTH = 45
+TEXTBOX_MAX_LENGTH = 40
+BUTTON_BORDER_RADIUS = 13
+
+
+# ==================== STATIC SCREEN TEXT ====================
+
+TITLE = "THE ULTIMATE RECIPE INDEX!!!"
+CAPTION = "The Ultimate Recipe Index >:)"
+CREDITS = "By Arwa, Ema, Mostafa, and Noon!!"
+
+
+# ==================== BACKGROUND IMAGE FILE PATHS ====================
+
+MAIN_MENU_IMAGE_FILE_PATH = "GUI/design_features/backgrounds/title.png"
+SURVEY_IMAGE_FILE_PATH = "GUI/design_features/backgrounds/background_algorithm.png"
+SEARCH_IMAGE_FILE_PATH = "GUI/design_features/backgrounds/background_search.png"
+
+# ============================================================
+# MAIN MENU (MM)
+# ============================================================
+
+# ==================== MAIN MENU BUTTONS ====================
+
+MM1_RECT_X = int(500 * PROGRAM_SCALE)
+MM1_RECT_Y = int(540 * PROGRAM_SCALE)
+MM1_RECT_WIDTH = int(150 * PROGRAM_SCALE)
+MM1_RECT_HEIGHT = int(45 * PROGRAM_SCALE)
+MM1_BUTTON_TEXT = "Survey"
+MM1_BUTTON_TOP_LEFT = (
+    int(425 * PROGRAM_SCALE),
+    int(590 * PROGRAM_SCALE)
+)
+
+MM2_RECT_X = int(500 * PROGRAM_SCALE)
+MM2_RECT_Y = int(600 * PROGRAM_SCALE)
+MM2_RECT_WIDTH = int(150 * PROGRAM_SCALE)
+MM2_RECT_HEIGHT = int(45 * PROGRAM_SCALE)
+MM2_BUTTON_TEXT = "Search"
+MM2_BUTTON_TOP_LEFT = (
+    int(425 * PROGRAM_SCALE),
+    int(650 * PROGRAM_SCALE)
+)
+
+MM3_RECT_X = int(500 * PROGRAM_SCALE)
+MM3_RECT_Y = int(660 * PROGRAM_SCALE)
+MM3_RECT_WIDTH = int(150 * PROGRAM_SCALE)
+MM3_RECT_HEIGHT = int(45 * PROGRAM_SCALE)
+MM3_BUTTON_TEXT = "Quit"
+MM3_BUTTON_TOP_LEFT = (
+    int(425 * PROGRAM_SCALE),
+    int(710 * PROGRAM_SCALE)
+)
+
+# ==================== MAIN MENU TEXT ====================
+
+MM_TEXT1_RECT_X = int(500 * PROGRAM_SCALE)
+MM_TEXT1_RECT_Y = int(500 * PROGRAM_SCALE)
+MM_TEXT1_RECT_WIDTH = int(1000 * PROGRAM_SCALE)
+MM_TEXT1_RECT_HEIGHT = int(1000 * PROGRAM_SCALE)
+MM_TEXT1_TOP_LEFT = (
+    int(175 * PROGRAM_SCALE),
+    int(75 * PROGRAM_SCALE)
+)
+
+MM_TEXT2_RECT_X = int(500 * PROGRAM_SCALE)
+MM_TEXT2_RECT_Y = int(500 * PROGRAM_SCALE)
+MM_TEXT2_RECT_WIDTH = int(1000 * PROGRAM_SCALE)
+MM_TEXT2_RECT_HEIGHT = int(1000 * PROGRAM_SCALE)
+MM_TEXT2_TOP_LEFT = (
+    int(350 * PROGRAM_SCALE),
+    int(150 * PROGRAM_SCALE)
+)
+
+
+# ============================================================
+# SURVEY SCREEN (SS)
+# ============================================================
+
+# ==================== SURVEY SCREEN BUTTONS ====================
+
+SS1_RECT_X = int(50 * PROGRAM_SCALE)
+SS1_RECT_Y = int(50 * PROGRAM_SCALE)
+SS1_RECT_WIDTH = int(160 * PROGRAM_SCALE)
+SS1_RECT_HEIGHT = int(45 * PROGRAM_SCALE)
+SS1_BUTTON_TEXT = "Return to Menu"
+SS1_BUTTON_TOP_LEFT = (
+    int(0 * PROGRAM_SCALE),
+    int(0 * PROGRAM_SCALE)
+)
+
+SS2_RECT_X = int(100 * PROGRAM_SCALE)
+SS2_RECT_Y = int(100 * PROGRAM_SCALE)
+SS2_RECT_WIDTH = int(150 * PROGRAM_SCALE)
+SS2_RECT_HEIGHT = int(45 * PROGRAM_SCALE)
+SS2_BUTTON_TEXT = "Submit"
+SS2_BUTTON_TOP_LEFT = (
+    int(750 * PROGRAM_SCALE),
+    int(700 * PROGRAM_SCALE)
+)
+
+SS3_RECT_X = int(100 * PROGRAM_SCALE)
+SS3_RECT_Y = int(50 * PROGRAM_SCALE)
+SS3_RECT_WIDTH = int(150 * PROGRAM_SCALE)
+SS3_RECT_HEIGHT = int(45 * PROGRAM_SCALE)
+SS3_BUTTON_TEXT = "Next"
+SS3_BUTTON_TOP_LEFT = (
+    int(800 * PROGRAM_SCALE),
+    int(550 * PROGRAM_SCALE)
+)
+
+SS4_RECT_X = int(100 * PROGRAM_SCALE)
+SS4_RECT_Y = int(50 * PROGRAM_SCALE)
+SS4_RECT_WIDTH = int(150 * PROGRAM_SCALE)
+SS4_RECT_HEIGHT = int(45 * PROGRAM_SCALE)
+SS4_BUTTON_TEXT = "Prev."
+SS4_BUTTON_TOP_LEFT = (
+    int(700 * PROGRAM_SCALE),
+    int(550 * PROGRAM_SCALE)
+)
+
+# ==================== SURVEY SCREEN TEXT ====================
+
+SS_Q1_TEXT = "1. List Dietary Restrictions (Max 5). Enter 1 category at a time."
+SS_Q2_TEXT = "2. List ingredients you want to use (Max 5). Enter 1 ingredient at a time."
+SS_Q3_TEXT = "3. List any allergies (Max 5). Enter 1 ingredient to at a time."
+SS_Q4_TEXT = "(Optional) List one type of recipe you want to make."
+
+SS_TEXT1_RECT_X = int(500 * PROGRAM_SCALE)
+SS_TEXT1_RECT_Y = int(500 * PROGRAM_SCALE)
+SS_TEXT1_RECT_WIDTH = int(1000 * PROGRAM_SCALE)
+SS_TEXT1_RECT_HEIGHT = int(60 * PROGRAM_SCALE)
+SS_TEXT1_TOP_LEFT = (
+    int(50 * PROGRAM_SCALE),
+    int(50 * PROGRAM_SCALE)
+)
+
+SS_TEXT2_RECT_X = int(500 * PROGRAM_SCALE)
+SS_TEXT2_RECT_Y = int(500 * PROGRAM_SCALE)
+SS_TEXT2_RECT_WIDTH = int(1000 * PROGRAM_SCALE)
+SS_TEXT2_RECT_HEIGHT = int(60 * PROGRAM_SCALE)
+SS_TEXT2_TOP_LEFT = (
+    int(50 * PROGRAM_SCALE),
+    int(170 * PROGRAM_SCALE)
+)
+
+SS_TEXT3_RECT_X = int(500 * PROGRAM_SCALE)
+SS_TEXT3_RECT_Y = int(500 * PROGRAM_SCALE)
+SS_TEXT3_RECT_WIDTH = int(1000 * PROGRAM_SCALE)
+SS_TEXT3_RECT_HEIGHT = int(60 * PROGRAM_SCALE)
+SS_TEXT3_TOP_LEFT = (
+    int(50 * PROGRAM_SCALE),
+    int(290 * PROGRAM_SCALE)
+)
+
+SS_TEXT4_RECT_X = int(500 * PROGRAM_SCALE)
+SS_TEXT4_RECT_Y = int(500 * PROGRAM_SCALE)
+SS_TEXT4_RECT_W = int(1000 * PROGRAM_SCALE)
+SS_TEXT4_RECT_H = int(60 * PROGRAM_SCALE)
+SS_TEXT4_TOP_LEFT = (
+    int(50 * PROGRAM_SCALE),
+    int(410 * PROGRAM_SCALE)
+)
+
+# ==================== SURVEY SCREEN TEXTBOXES ====================
+
+SS_TB1_RECT_X = int(500 * PROGRAM_SCALE)
+SS_TB1_RECT_Y = int(500 * PROGRAM_SCALE)
+SS_TB1_RECT_W = int(450 * PROGRAM_SCALE)
+SS_TB1_RECT_H = int(40 * PROGRAM_SCALE)
+SS_TB1_TOP_LEFT = (
+    int(50 * PROGRAM_SCALE),
+    int(100 * PROGRAM_SCALE)
+)
+SS_TB1_LIMIT = 5
+
+SS_TB2_RECT_X = int(500 * PROGRAM_SCALE)
+SS_TB2_RECT_Y = int(500 * PROGRAM_SCALE)
+SS_TB2_RECT_W = int(450 * PROGRAM_SCALE)
+SS_TB2_RECT_H = int(40 * PROGRAM_SCALE)
+SS_TB2_TOP_LEFT = (
+    int(50 * PROGRAM_SCALE),
+    int(220 * PROGRAM_SCALE)
+)
+SS_TB2_LIMIT = 5
+
+SS_TB3_RECT_X = int(500 * PROGRAM_SCALE)
+SS_TB3_RECT_Y = int(500 * PROGRAM_SCALE)
+SS_TB3_RECT_W = int(450 * PROGRAM_SCALE)
+SS_TB3_RECT_H = int(40 * PROGRAM_SCALE)
+SS_TB3_TOP_LEFT = (
+    int(50 * PROGRAM_SCALE),
+    int(340 * PROGRAM_SCALE)
+)
+SS_TB3_LIMIT = 5
+
+SS_TB4_RECT_X = int(500 * PROGRAM_SCALE)
+SS_TB4_RECT_Y = int(500 * PROGRAM_SCALE)
+SS_TB4_RECT_W = int(450 * PROGRAM_SCALE)
+SS_TB4_RECT_H = int(40 * PROGRAM_SCALE)
+SS_TB4_TOP_LEFT = (
+    int(50 * PROGRAM_SCALE),
+    int(460 * PROGRAM_SCALE)
+)
+SS_TB4_LIMIT = 1
+
+# ============================================================
+# SEARCH SCREEN (SI)
+# ============================================================
+
+# ==================== SEARCH SCREEN BUTTONS ====================
+
+SI1_RECT_X = int(50 * PROGRAM_SCALE)
+SI1_RECT_Y = int(50 * PROGRAM_SCALE)
+SI1_RECT_WIDTH = int(160 * PROGRAM_SCALE)
+SI1_RECT_HEIGHT = int(45 * PROGRAM_SCALE)
+SI1_BUTTON_TEXT = "Return to Menu"
+SI1_BUTTON_TOP_LEFT = (
+    int(0 * PROGRAM_SCALE),
+    int(0 * PROGRAM_SCALE)
+)
+
+SI2_RECT_X = int(100 * PROGRAM_SCALE)
+SI2_RECT_Y = int(100 * PROGRAM_SCALE)
+SI2_RECT_WIDTH = int(150 * PROGRAM_SCALE)
+SI2_RECT_HEIGHT = int(45 * PROGRAM_SCALE)
+SI2_BUTTON_TEXT = "Submit"
+SI2_BUTTON_TOP_LEFT = (
+    int(700 * PROGRAM_SCALE),
+    int(600 * PROGRAM_SCALE)
+)
+
+SI3_RECT_X = int(100 * PROGRAM_SCALE)
+SI3_RECT_Y = int(50 * PROGRAM_SCALE)
+SI3_RECT_WIDTH = int(150 * PROGRAM_SCALE)
+SI3_RECT_HEIGHT = int(45 * PROGRAM_SCALE)
+SI3_BUTTON_TEXT = "Next"
+SI3_BUTTON_TOP_LEFT = (
+    int(800 * PROGRAM_SCALE),
+    int(550 * PROGRAM_SCALE)
+)
+
+SI4_RECT_X = int(100 * PROGRAM_SCALE)
+SI4_RECT_Y = int(50 * PROGRAM_SCALE)
+SI4_RECT_WIDTH = int(150 * PROGRAM_SCALE)
+SI4_RECT_HEIGHT = int(45 * PROGRAM_SCALE)
+SI4_BUTTON_TEXT = "Prev."
+SI4_BUTTON_TOP_LEFT = (
+    int(700 * PROGRAM_SCALE),
+    int(550 * PROGRAM_SCALE)
+)
+
+# ==================== SEARCH SCREEN TEXT ====================
+
+SI_FILTER1_TEXT = "Filter by: Ingredients, Category"
+SI_FILTER2_TEXT = "Search:"
+SI_FILTER3_TEXT = "Results (max 50 recipes):"
+
+SI_TEXT1_RECT_X = int(500 * PROGRAM_SCALE)
+SI_TEXT1_RECT_Y = int(500 * PROGRAM_SCALE)
+SI_TEXT1_RECT_WIDTH = int(450 * PROGRAM_SCALE)
+SI_TEXT1_RECT_HEIGHT = int(60 * PROGRAM_SCALE)
+SI_TEXT1_TOP_LEFT = (
+    int(200 * PROGRAM_SCALE),
+    int(20 * PROGRAM_SCALE)
+)
+
+SI_TEXT2_RECT_X = int(500 * PROGRAM_SCALE)
+SI_TEXT2_RECT_Y = int(500 * PROGRAM_SCALE)
+SI_TEXT2_RECT_WIDTH = int(450 * PROGRAM_SCALE)
+SI_TEXT2_RECT_HEIGHT = int(60 * PROGRAM_SCALE)
+SI_TEXT2_TOP_LEFT = (
+    int(600 * PROGRAM_SCALE),
+    int(50 * PROGRAM_SCALE)
+)
+
+SI_TEXT3_RECT_X = int(500 * PROGRAM_SCALE)
+SI_TEXT3_RECT_Y = int(500 * PROGRAM_SCALE)
+SI_TEXT3_RECT_WIDTH = int(450 * PROGRAM_SCALE)
+SI_TEXT3_RECT_HEIGHT = int(60 * PROGRAM_SCALE)
+SI_TEXT3_TOP_LEFT = (
+    int(50 * PROGRAM_SCALE),
+    int(150 * PROGRAM_SCALE)
+)
+
+
+# ==================== SEARCH SCREEN TEXTBOXES ====================
+
+SI_TB1_RECT_X = int(500 * PROGRAM_SCALE)
+SI_TB1_RECT_Y = int(500 * PROGRAM_SCALE)
+SI_TB1_RECT_WIDTH = int(150 * PROGRAM_SCALE)
+SI_TB1_RECT_HEIGHT = int(40 * PROGRAM_SCALE)
+SI_TB1_TOP_LEFT = (
+    int(200 * PROGRAM_SCALE),
+    int(50 * PROGRAM_SCALE)
+)
+SI_TB1_LIMIT = 3
+
+SI_TB2_RECT_X = int(500 * PROGRAM_SCALE)
+SI_TB2_RECT_Y = int(500 * PROGRAM_SCALE)
+SI_TB2_RECT_WIDTH = int(150 * PROGRAM_SCALE)
+SI_TB2_RECT_HEIGHT = int(40 * PROGRAM_SCALE)
+SI_TB2_TOP_LEFT = (
+    int(400 * PROGRAM_SCALE),
+    int(50 * PROGRAM_SCALE)
+)
+SI_TB2_LIMIT = 3
+
+SI_TB3_RECT_X = int(500 * PROGRAM_SCALE)
+SI_TB3_RECT_Y = int(500 * PROGRAM_SCALE)
+SI_TB3_RECT_WIDTH = int(150 * PROGRAM_SCALE)
+SI_TB3_RECT_HEIGHT = int(40 * PROGRAM_SCALE)
+SI_TB3_TOP_LEFT = (
+    int(700 * PROGRAM_SCALE),
+    int(50 * PROGRAM_SCALE)
+)
+SI_TB3_LIMIT = 1

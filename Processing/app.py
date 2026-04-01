@@ -1,3 +1,10 @@
+"""CSC111 Project 2: The Ultimate Recipe Index - App
+
+===============================
+
+This Python module contains the area where the app is instanitated and used.
+"""
+
 import sys
 import pygame
 
@@ -5,33 +12,9 @@ import GUI.screen_displays as screen_displays
 import Processing.processing as processing
 import Data.file_reader as file_reader
 from Data import vertex
-from Data.recipe_graph import BASE_INDEX, CATEGORIES_INDEX, INGREDIENTS_INDEX, NAME_INDEX, NAME_TOKENS_INDEX, \
-    RecipeGraph, STEPS_INDEX, \
-    TARGET_INDEX, \
-    UID_INDEX
+from Data.recipe_graph import RecipeGraph
 from Data.recipe_tree import NAME_TOKENS, RecipeTree
-
-RECIPES_CSV_PATH = "Data/Datasets/recipes.csv"
-IS_RECIPE_CSV = True
-PAIRS_CSV_PATH = "Data/Datasets/pairs.csv"
-IS_PAIRS_CSV = True
-
-BUTTON_COLOR = (148, 124, 92)
-SUBMIT_COLOR = (138, 154, 91)
-
-CAPTION = 'The Ultimate Recipe Index >:)'
-X_DIMENSIONS, Y_DIMENSIONS = 1000, 800
-
-MAIN_MENU_IMAGE_FILE_PATH = "GUI/design_features/backgrounds/title.png"
-ALGORITHM_IMAGE_FILE_PATH = "GUI/design_features/backgrounds/background.png"
-SEARCH_IMAGE_FILE_PATH = "GUI/design_features/backgrounds/searchbg.png"
-
-TITLE_FONT = 50
-CAPTION_FONT = 20
-FONT_SIZE = 25
-
-TITLE = 'THE ULTIMATE RECIPE INDEX!!!'
-CREDITS = 'By Arwa, Ema, Mostafa, and Noon!!'
+from Processing.app_constants import *
 
 
 def build_recipe_structures(recipes_path: str, is_recipes_csv: bool,
@@ -106,6 +89,16 @@ def make_recipe_vertex_shared(
 
 
 class App:
+    """
+    Represents the main area where our app is created and ran.
+
+    Instance Attributes:
+        - screen: the screen display and dimensions
+        - current_screen: the manager for what screen we are currently on
+        - recipe_tree: a tree data structure representation of recipes
+        - recipe_graph: a graph data structure representation of recipes
+        - running: whether this app is currently running or not
+    """
     screen: pygame.Surface
     current_screen: screen_displays.ScreenOrganizer
     recipe_tree: RecipeTree
@@ -120,164 +113,244 @@ class App:
 
         self.screen = pygame.display.set_mode((X_DIMENSIONS, Y_DIMENSIONS))
         self.running = True
-        self._setup_ui()
-        self._setup_processors()
+        self._setup()
 
-    def _setup_ui(self) -> None:
+    def _setup(self) -> None:
         # -------------------- BUTTONS --------------------
 
         # Main menu
-        mm1_rect = pygame.Rect(500, 540, 150, 45)
-        self.mm1_button = screen_displays.Button(
-            mm1_rect, "Survey", BUTTON_COLOR, None, (400, 590)
+        mm1_rect = pygame.Rect(
+            MM1_RECT_X,
+            MM1_RECT_Y,
+            MM1_RECT_WIDTH,
+            MM1_RECT_HEIGHT
+        )
+        main_menu_survey_button = screen_displays.Button(
+            mm1_rect, MM1_BUTTON_TEXT, BUTTON_COLOR,
+            top_left_coordinates=MM1_BUTTON_TOP_LEFT
         )
 
-        mm2_rect = pygame.Rect(500, 600, 150, 45)
-        self.mm2_button = screen_displays.Button(
-            mm2_rect, "Search", BUTTON_COLOR, None, (400, 650)
+        mm2_rect = pygame.Rect(
+            MM2_RECT_X,
+            MM2_RECT_Y,
+            MM2_RECT_WIDTH,
+            MM2_RECT_HEIGHT
+        )
+        main_menu_search_button = screen_displays.Button(
+            mm2_rect, MM2_BUTTON_TEXT, BUTTON_COLOR,
+            top_left_coordinates=MM2_BUTTON_TOP_LEFT
         )
 
-        mm3_rect = pygame.Rect(500, 660, 150, 45)
-        self.mm3_button = screen_displays.Button(
-            mm3_rect, "Quit", BUTTON_COLOR, None, (400, 710)
+        mm3_rect = pygame.Rect(
+            MM3_RECT_X,
+            MM3_RECT_Y,
+            MM3_RECT_WIDTH,
+            MM3_RECT_HEIGHT
+        )
+        main_menu_quit_button = screen_displays.Button(
+            mm3_rect, MM3_BUTTON_TEXT, BUTTON_COLOR,
+            top_left_coordinates=MM3_BUTTON_TOP_LEFT
         )
 
         # Algorithm
-        as1_rect = pygame.Rect(50, 50, 160, 45)
-        self.as1_button = screen_displays.Button(
-            as1_rect, "Return to Menu", BUTTON_COLOR, None, (0, 0)
+        ss1_rect = pygame.Rect(
+            SS1_RECT_X,
+            SS1_RECT_Y,
+            SS1_RECT_WIDTH,
+            SS1_RECT_HEIGHT
+        )
+        survey_menu_button = screen_displays.Button(
+            ss1_rect, SS1_BUTTON_TEXT, BUTTON_COLOR,
+            top_left_coordinates=SS1_BUTTON_TOP_LEFT
         )
 
-        as2_rect = pygame.Rect(100, 100, 150, 45)
-        self.as2_button = screen_displays.Button(
-            as2_rect, "Submit", SUBMIT_COLOR, None, (750, 700)
+        ss2_rect = pygame.Rect(
+            SS2_RECT_X,
+            SS2_RECT_Y,
+            SS2_RECT_WIDTH,
+            SS2_RECT_HEIGHT
+        )
+        survey_submit_button = screen_displays.Button(
+            ss2_rect, SS2_BUTTON_TEXT, SUBMIT_COLOR,
+            top_left_coordinates=SS2_BUTTON_TOP_LEFT
         )
 
-        as3_rect = pygame.Rect(100, 50, 150, 45)
-        self.as3_button = screen_displays.Button(
-            as3_rect, "Next", SUBMIT_COLOR, None, (800, 550)
+        ss3_rect = pygame.Rect(
+            SS3_RECT_X,
+            SS3_RECT_Y,
+            SS3_RECT_WIDTH,
+            SS3_RECT_HEIGHT
+        )
+        survey_next_button = screen_displays.Button(
+            ss3_rect, SS3_BUTTON_TEXT, SUBMIT_COLOR,
+            top_left_coordinates=SS3_BUTTON_TOP_LEFT
         )
 
-        as4_rect = pygame.Rect(100, 50, 150, 45)
-        self.as4_button = screen_displays.Button(
-            as4_rect, "Prev.", SUBMIT_COLOR, None, (700, 550)
+        ss4_rect = pygame.Rect(
+            SS4_RECT_X,
+            SS4_RECT_Y,
+            SS4_RECT_WIDTH,
+            SS4_RECT_HEIGHT
+        )
+        survey_screen_prev_button = screen_displays.Button(
+            ss4_rect, SS4_BUTTON_TEXT, SUBMIT_COLOR,
+            top_left_coordinates=SS4_BUTTON_TOP_LEFT
         )
 
         # Search
-        si1_rect = pygame.Rect(50, 50, 160, 45)
-        self.si1_button = screen_displays.Button(
-            si1_rect, "Return to Menu", BUTTON_COLOR, None, (0, 0)
+        si1_rect = pygame.Rect(
+            SI1_RECT_X,
+            SI1_RECT_Y,
+            SI1_RECT_WIDTH,
+            SI1_RECT_HEIGHT
+        )
+        search_menu_button = screen_displays.Button(
+            si1_rect, SI1_BUTTON_TEXT, BUTTON_COLOR,
+            top_left_coordinates=SI1_BUTTON_TOP_LEFT
         )
 
-        si2_rect = pygame.Rect(100, 100, 150, 45)
-        self.si2_button = screen_displays.Button(
-            si2_rect, "Submit", SUBMIT_COLOR, None, (700, 600)
+        si2_rect = pygame.Rect(
+            SI2_RECT_X,
+            SI2_RECT_Y,
+            SI2_RECT_WIDTH,
+            SI2_RECT_HEIGHT
         )
-        si3_rect = pygame.Rect(100, 50, 150, 45)
-        self.si3_button = screen_displays.Button(
-            si3_rect, "Next", SUBMIT_COLOR, None, (800, 550)
-        )
-
-        si4_rect = pygame.Rect(100, 50, 150, 45)
-        self.si4_button = screen_displays.Button(
-            si4_rect, "Prev.", SUBMIT_COLOR, None, (700, 550)
+        search_submit_button = screen_displays.Button(
+            si2_rect, SI2_BUTTON_TEXT, SUBMIT_COLOR,
+            top_left_coordinates=SI2_BUTTON_TOP_LEFT
         )
 
-        main_menu_screen_buttons = [self.mm1_button, self.mm2_button, self.mm3_button]
-        algorithm_screen_buttons = [self.as1_button, self.as2_button, self.as3_button, self.as4_button]
-        search_screen_buttons = [self.si1_button, self.si2_button, self.si3_button, self.si4_button]
+        si3_rect = pygame.Rect(
+            SI3_RECT_X,
+            SI3_RECT_Y,
+            SI3_RECT_WIDTH,
+            SI3_RECT_HEIGHT
+        )
+        search_next_button = screen_displays.Button(
+            si3_rect, SI3_BUTTON_TEXT, SUBMIT_COLOR,
+            top_left_coordinates=SI3_BUTTON_TOP_LEFT
+        )
 
-        # -------------------- TEXT --------------------
+        si4_rect = pygame.Rect(
+            SI4_RECT_X,
+            SI4_RECT_Y,
+            SI4_RECT_WIDTH,
+            SI4_RECT_HEIGHT
+        )
+        search_prev_button = screen_displays.Button(
+            si4_rect, SI4_BUTTON_TEXT, SUBMIT_COLOR,
+            top_left_coordinates=SI4_BUTTON_TOP_LEFT
+        )
 
-        main_text_format1 = pygame.Rect(500, 500, 450, 60)
-        main_text_format2 = pygame.Rect(500, 500, 450, 60)
+        main_menu_screen_buttons = [main_menu_survey_button, main_menu_search_button, main_menu_quit_button]
+        survey_screen_buttons = [survey_menu_button, survey_submit_button, survey_next_button,
+                                 survey_screen_prev_button]
+        search_screen_buttons = [search_menu_button, search_submit_button, search_next_button,
+                                 search_prev_button]
+
+        main_text_format1 = pygame.Rect(
+            MM_TEXT1_RECT_X, MM_TEXT1_RECT_Y,
+            MM_TEXT1_RECT_WIDTH, MM_TEXT1_RECT_HEIGHT
+        )
+        main_text_format2 = pygame.Rect(
+            MM_TEXT2_RECT_X, MM_TEXT2_RECT_Y,
+            MM_TEXT2_RECT_WIDTH, MM_TEXT2_RECT_HEIGHT
+        )
 
         mm_text1 = screen_displays.Text(
-            TITLE, main_text_format1, (200, 75), TITLE_FONT
+            TITLE, main_text_format1, MM_TEXT1_TOP_LEFT, TITLE_FONT
         )
         mm_text2 = screen_displays.Text(
-            CREDITS, main_text_format2, (250, 150), CAPTION_FONT
+            CREDITS, main_text_format2, MM_TEXT2_TOP_LEFT, CAPTION_FONT
         )
 
         main_menu_screen_text = [mm_text1, mm_text2]
 
-        AS_text_format1 = pygame.Rect(500, 500, 450, 60)
-        AS_text_format2 = pygame.Rect(500, 500, 450, 60)
-        AS_text_format3 = pygame.Rect(500, 500, 450, 60)
-        AS_text_format4 = pygame.Rect(500, 500, 450, 60)
+        survey_text1_rect = pygame.Rect(
+            SS_TEXT1_RECT_X, SS_TEXT1_RECT_Y,
+            SS_TEXT1_RECT_WIDTH, SS_TEXT1_RECT_HEIGHT
+        )
+        survey_text2_rect = pygame.Rect(
+            SS_TEXT2_RECT_X, SS_TEXT2_RECT_Y,
+            SS_TEXT2_RECT_WIDTH, SS_TEXT2_RECT_HEIGHT
+        )
+        survey_text3_rect = pygame.Rect(
+            SS_TEXT3_RECT_X, SS_TEXT3_RECT_Y,
+            SS_TEXT3_RECT_WIDTH, SS_TEXT3_RECT_HEIGHT
+        )
+        survey_text4_rect = pygame.Rect(
+            SS_TEXT4_RECT_X, SS_TEXT4_RECT_Y,
+            SS_TEXT4_RECT_W, SS_TEXT4_RECT_H
+        )
 
-        question1 = '1. List Dietary Restrictions (Max 5). Enter 1 category at a time.'
-        question2 = '2. List ingredients you want to use (Max 5). Enter 1 ingredient at a time.'
-        question3 = '3. List any allergies (Max 5). Enter 1 ingredient to at a time.'
-        question4 = '(Optional) List one type of recipe you want to make.'
+        survey_text1 = screen_displays.Text(SS_Q1_TEXT, survey_text1_rect, SS_TEXT1_TOP_LEFT, FONT_SIZE)
+        survey_text2 = screen_displays.Text(SS_Q2_TEXT, survey_text2_rect, SS_TEXT2_TOP_LEFT, FONT_SIZE)
+        survey_text3 = screen_displays.Text(SS_Q3_TEXT, survey_text3_rect, SS_TEXT3_TOP_LEFT, FONT_SIZE)
+        survey_text4 = screen_displays.Text(SS_Q4_TEXT, survey_text4_rect, SS_TEXT4_TOP_LEFT, FONT_SIZE)
 
-        AS_text1 = screen_displays.Text(question1, AS_text_format1, (50, 50), FONT_SIZE)
-        AS_text2 = screen_displays.Text(question2, AS_text_format2, (50, 170), FONT_SIZE)
-        AS_text3 = screen_displays.Text(question3, AS_text_format3, (50, 290), FONT_SIZE)
-        AS_text4 = screen_displays.Text(question4, AS_text_format4, (50, 410), FONT_SIZE)
+        survey_screen_text = [survey_text1, survey_text2, survey_text3, survey_text4]
 
-        algorithm_screen_text = [AS_text1, AS_text2, AS_text3, AS_text4]
+        search_text1_rect = pygame.Rect(
+            SI_TEXT1_RECT_X, SI_TEXT1_RECT_Y,
+            SI_TEXT1_RECT_WIDTH, SI_TEXT1_RECT_HEIGHT
+        )
+        search_text2_rect = pygame.Rect(
+            SI_TEXT2_RECT_X, SI_TEXT2_RECT_Y,
+            SI_TEXT2_RECT_WIDTH, SI_TEXT2_RECT_HEIGHT
+        )
+        search_text3_rect = pygame.Rect(
+            SI_TEXT3_RECT_X, SI_TEXT3_RECT_Y,
+            SI_TEXT3_RECT_WIDTH, SI_TEXT3_RECT_HEIGHT
+        )
 
-        SI_text_format1 = pygame.Rect(500, 500, 450, 60)
-        SI_text_format2 = pygame.Rect(500, 500, 450, 60)
-        SI_text_format3 = pygame.Rect(500, 500, 450, 60)
+        search_text1 = screen_displays.Text(SI_FILTER1_TEXT, search_text1_rect, SI_TEXT1_TOP_LEFT, FONT_SIZE)
+        search_text2 = screen_displays.Text(SI_FILTER2_TEXT, search_text2_rect, SI_TEXT2_TOP_LEFT, FONT_SIZE)
+        search_text3 = screen_displays.Text(SI_FILTER3_TEXT, search_text3_rect, SI_TEXT3_TOP_LEFT, FONT_SIZE)
 
-        filter1 = 'Filter by: Ingredients, Category'
-        filter2 = 'Search:'
-        filter3 = 'Results:'
-
-        SI_text1 = screen_displays.Text(filter1, SI_text_format1, (200, 20), FONT_SIZE)
-        SI_text2 = screen_displays.Text(filter2, SI_text_format2, (600, 50), FONT_SIZE)
-        SI_text3 = screen_displays.Text(filter3, SI_text_format3, (10, 125), FONT_SIZE)
-
-        search_screen_text = [SI_text1, SI_text2, SI_text3]
+        search_screen_text = [search_text1, search_text2, search_text3]
 
         # -------------------- TEXTBOXES --------------------
 
-        AS_textbox_format1 = pygame.Rect(500, 500, 450, 40)
-        AS_textbox_format2 = pygame.Rect(500, 500, 450, 40)
-        AS_textbox_format3 = pygame.Rect(500, 500, 450, 40)
-        AS_textbox_format4 = pygame.Rect(500, 500, 450, 40)
+        survey_textbox1_rect = pygame.Rect(SS_TB1_RECT_X, SS_TB1_RECT_Y, SS_TB1_RECT_W, SS_TB1_RECT_H)
+        survey_textbox2_rect = pygame.Rect(SS_TB2_RECT_X, SS_TB2_RECT_Y, SS_TB2_RECT_W, SS_TB2_RECT_H)
+        survey_textbox3_rect = pygame.Rect(SS_TB3_RECT_X, SS_TB3_RECT_Y, SS_TB3_RECT_W, SS_TB3_RECT_H)
+        survey_textbox4_rect = pygame.Rect(SS_TB4_RECT_X, SS_TB4_RECT_Y, SS_TB4_RECT_W, SS_TB4_RECT_H)
 
-        self.AS_textbox_q1 = screen_displays.TextBox(AS_textbox_format1, (50, 100), 5)
-        self.AS_textbox_q2 = screen_displays.TextBox(AS_textbox_format2, (50, 220), 5)
-        self.AS_textbox_q3 = screen_displays.TextBox(AS_textbox_format3, (50, 340), 5)
-        self.AS_textbox_q4 = screen_displays.TextBox(AS_textbox_format4, (50, 460), 1)
+        survey_textbox1 = screen_displays.TextBox(survey_textbox1_rect, SS_TB1_TOP_LEFT, SS_TB1_LIMIT)
+        survey_textbox2 = screen_displays.TextBox(survey_textbox2_rect, SS_TB2_TOP_LEFT, SS_TB2_LIMIT)
+        survey_textbox3 = screen_displays.TextBox(survey_textbox3_rect, SS_TB3_TOP_LEFT, SS_TB3_LIMIT)
+        survey_textbox4 = screen_displays.TextBox(survey_textbox4_rect, SS_TB4_TOP_LEFT, SS_TB4_LIMIT)
 
-        algorithm_screen_textboxes = [
-            self.AS_textbox_q1, self.AS_textbox_q2, self.AS_textbox_q3, self.AS_textbox_q4
-        ]
+        survey_screen_textboxes = [survey_textbox1, survey_textbox2, survey_textbox3, survey_textbox4]
 
-        SI_textbox_format1 = pygame.Rect(500, 500, 150, 40)
-        SI_textbox_format2 = pygame.Rect(500, 500, 150, 40)
-        SI_textbox_format3 = pygame.Rect(500, 500, 150, 40)
+        search_textbox1_rect = pygame.Rect(SI_TB1_RECT_X, SI_TB1_RECT_Y, SI_TB1_RECT_WIDTH, SI_TB1_RECT_HEIGHT)
+        search_textbox2_rect = pygame.Rect(SI_TB2_RECT_X, SI_TB2_RECT_Y, SI_TB2_RECT_WIDTH, SI_TB2_RECT_HEIGHT)
+        search_textbox3_rect = pygame.Rect(SI_TB3_RECT_X, SI_TB3_RECT_Y, SI_TB3_RECT_WIDTH, SI_TB3_RECT_HEIGHT)
 
-        self.SI_textbox_q1 = screen_displays.TextBox(SI_textbox_format1, (200, 50), 3)
-        self.SI_textbox_q2 = screen_displays.TextBox(SI_textbox_format2, (400, 50), 3)
-        self.SI_textbox_q3 = screen_displays.TextBox(SI_textbox_format3, (700, 50), 1)
+        search_textbox1 = screen_displays.TextBox(search_textbox1_rect, SI_TB1_TOP_LEFT, SI_TB1_LIMIT)
+        search_textbox2 = screen_displays.TextBox(search_textbox2_rect, SI_TB2_TOP_LEFT, SI_TB2_LIMIT)
+        search_textbox3 = screen_displays.TextBox(search_textbox3_rect, SI_TB3_TOP_LEFT, SI_TB3_LIMIT)
 
-        search_screen_textboxes = [
-            self.SI_textbox_q1, self.SI_textbox_q2, self.SI_textbox_q3
-        ]
+        search_screen_textboxes = [search_textbox1, search_textbox2, search_textbox3]
 
         # -------------------- SCREENS --------------------
 
-        self.main_menu_screen = screen_displays.Screen(
+        main_menu_screen = screen_displays.Screen(
             main_menu_screen_buttons,
             MAIN_MENU_IMAGE_FILE_PATH,
             self.screen,
             text=main_menu_screen_text
         )
 
-        self.algorithm_screen = screen_displays.Screen(
-            algorithm_screen_buttons,
-            ALGORITHM_IMAGE_FILE_PATH,
+        survey_screen = screen_displays.Screen(
+            survey_screen_buttons,
+            SURVEY_IMAGE_FILE_PATH,
             self.screen,
-            textboxes=algorithm_screen_textboxes,
-            text=algorithm_screen_text
+            textboxes=survey_screen_textboxes,
+            text=survey_screen_text
         )
 
-        self.search_screen = screen_displays.Screen(
+        search_screen = screen_displays.Screen(
             search_screen_buttons,
             SEARCH_IMAGE_FILE_PATH,
             self.screen,
@@ -285,46 +358,45 @@ class App:
             text=search_screen_text
         )
 
-        self.current_screen = screen_displays.ScreenOrganizer(self.main_menu_screen)
-
-    def _setup_processors(self) -> None:
-        self.main_menu_processor = processing.MainMenuProcessor(
-            self.current_screen,
-            self.search_screen,
-            self.algorithm_screen,
-            self.main_menu_screen
+        current_screen = screen_displays.ScreenOrganizer(main_menu_screen)
+        main_menu_processor = processing.MainMenuProcessor(
+            current_screen,
+            search_screen,
+            survey_screen,
+            main_menu_screen
         )
 
-        self.algorithm_screen_processor = processing.AlgorithmProcessor(
-            self.current_screen,
-            self.algorithm_screen,
-            self.main_menu_screen,
+        survey_screen_processor = processing.SurveyProcessor(
+            current_screen,
+            survey_screen,
+            main_menu_screen,
             self.recipe_graph
         )
 
-        self.search_screen_processor = processing.SearchProcessor(
-            self.current_screen,
-            self.search_screen,
-            self.main_menu_screen,
+        search_screen_processor = processing.SearchProcessor(
+            current_screen,
+            search_screen,
+            main_menu_screen,
             self.recipe_tree
         )
 
         # Assign button actions
-        self.mm1_button.action = self.main_menu_processor.go_to_survey
-        self.mm2_button.action = self.main_menu_processor.go_to_search
-        self.mm3_button.action = self.main_menu_processor.exit_app
+        main_menu_survey_button.action = main_menu_processor.go_to_survey
+        main_menu_search_button.action = main_menu_processor.go_to_search
+        main_menu_quit_button.action = main_menu_processor.exit_app
 
-        self.as1_button.action = self.algorithm_screen_processor.go_to_main_menu
-        self.as2_button.action = self.algorithm_screen_processor.give_recommendation
-        self.as3_button.action = self.algorithm_screen_processor.go_right
-        self.as4_button.action = self.algorithm_screen_processor.go_left
+        survey_menu_button.action = survey_screen_processor.go_to_main_menu
+        survey_submit_button.action = survey_screen_processor.give_recommendation
+        survey_next_button.action = survey_screen_processor.go_right
+        survey_screen_prev_button.action = survey_screen_processor.go_left
 
-        self.si1_button.action = self.search_screen_processor.go_to_main_menu
-        self.si2_button.action = self.search_screen_processor.search
-        self.si3_button.action = self.search_screen_processor.go_right
-        self.si4_button.action = self.search_screen_processor.go_left
+        search_menu_button.action = search_screen_processor.go_to_main_menu
+        search_submit_button.action = search_screen_processor.search
+        search_next_button.action = search_screen_processor.go_right
+        search_prev_button.action = search_screen_processor.go_left
 
     def run(self) -> None:
+        """The main area where the app runs"""
         while self.running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:

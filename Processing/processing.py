@@ -17,8 +17,6 @@ from Data.recipe_graph import RecipeGraph
 from Data.vertex import Recipe
 from Processing.processing_constants import *
 
-ERROR_MESSAGE = "Either you have not pressed submit or we have found no recipes, sorry!"
-
 
 def list_to_str(lst: list[str]) -> str:
     """Turn a list of strings into a single string spaced out by commas"""
@@ -63,13 +61,13 @@ class MainMenuProcessor:
 class SurveyProcessor:
     """The processor for the survey screen in app.py
     Instance Attributes:
-        - organizer:
-        - survey_screen:
-        - main_screen:
+        - organizer: the ScreenOrganizer in app.py
+        - survey_screen: the survey Screen in app.py
+        - main_screen: the main menu Screen in app.py
     Private Instance Attributes:
         - _data: the recipe graph which contains
-        - _current_recipes:
-        - _current_index:
+        - _current_recipes: list of valid Recipes to show in search
+        - _current_index: current index user is at when scrolling through _current_recipes
         """
     organizer: gui.ScreenOrganizer
     survey_screen: gui.Screen
@@ -104,7 +102,6 @@ class SurveyProcessor:
                 len(inputs[AS_ALLERGIES_INDEX]) == 0):
             self._display_error(NO_FILTER_ERROR)
             return
-        self.survey_screen.refresh_screen()
         self._current_index = START_INDEX
 
         if not recipe_name:
